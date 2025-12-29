@@ -12,7 +12,7 @@ export * from './uiFileUtilities';
 export * from './uiHooks';
 export * from './uiContexts';
 export * from './uiComponents';
-export * from './ActionablePolaroidCard';
+export * from './ActionablePolaroidCard'; // Includes AppScreenHeader, ImageUploader, ResultsView, AppOptionsLayout, OptionsPanel
 export { default as ExtraTools } from './ExtraTools';
 export { default as ImageLayoutModal } from './ImageLayoutModal';
 export { default as BeforeAfterModal } from './BeforeAfterModal';

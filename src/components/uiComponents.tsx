@@ -303,6 +303,7 @@ export const GalleryPicker: React.FC<GalleryPickerProps> = ({ isOpen, onClose, o
     const isDroppingRef = useRef(false);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
     const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
+    const [isCombining, setIsCombining] = useState(false);
 
     useEffect(() => {
         closeLightbox();
