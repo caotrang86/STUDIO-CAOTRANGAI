@@ -13,7 +13,7 @@ import { useLightbox } from './uiHooks';
 import { ImageThumbnail } from './ImageThumbnail';
 import { GalleryToolbar } from './GalleryToolbar';
 import Lightbox from './Lightbox';
-import { CloudUploadIcon } from './icons';
+import { CloudUploadIcon, TOOLTIPS } from './icons';
 
 // NEW: More descriptive card types to centralize logic
 type CardType =
@@ -51,7 +51,7 @@ interface ActionablePolaroidCardProps {
     regenerationPlaceholder?: string;
 }
 
-// --- Local Modal Definitions ---
+// --- Local Modal Definitions (Moved from uiComponents to break circular dependency) ---
 
 interface RegenerationModalProps {
     isOpen: boolean;

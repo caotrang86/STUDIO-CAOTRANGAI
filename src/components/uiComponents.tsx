@@ -13,6 +13,7 @@ import { ImageThumbnailActions } from './ImageThumbnailActions';
 import { downloadJson } from './uiFileUtilities';
 import { AvatarCreatorState, BabyPhotoCreatorState } from './uiTypes';
 export * from './SearchableSelect';
+export { RegenerationModal, GalleryPicker, WebcamCaptureModal } from './ActionablePolaroidCard';
 
 /**
  * Renders a title with optional smart wrapping to keep a specified number of last words together.
