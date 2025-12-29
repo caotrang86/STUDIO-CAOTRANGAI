@@ -20,7 +20,7 @@ import {
     GalleryIcon, 
     WebcamIcon, 
     RegenerateIcon, 
-    DownloadIcon,
+    DownloadIcon, 
     CloudUploadIcon,
     DeleteIcon,
 } from './icons';
