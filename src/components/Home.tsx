@@ -14,6 +14,10 @@ import { CloudUploadIcon, LayerComposerIcon, EditorIcon, StoryboardIcon } from '
 interface ProcessedAppConfig extends AppConfig {
   title: string;
   description: string;
+  // Explicitly ensuring these properties are present to avoid type errors if AppConfig is not resolving correctly
+  id: string;
+  icon: string;
+  previewImageUrl?: string;
 }
 
 interface HomeProps {
