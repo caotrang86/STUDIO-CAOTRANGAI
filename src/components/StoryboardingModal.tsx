@@ -5,10 +5,8 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls, useImageEditor, type ImageForZip, downloadAllImagesAsZip, downloadJson, downloadImage } from './uiUtils';
-import { useDebounce } from './uiHooks';
+import { useAppControls, useImageEditor, type ImageForZip, downloadAllImagesAsZip, downloadJson, downloadImage, useDebounce, useLightbox } from './uiUtils';
 import { GalleryPicker } from './ActionablePolaroidCard';
-import { useLightbox } from './uiHooks';
 import type { SceneState } from './uiTypes';
 import { CloseIcon, CloudUploadIcon, UndoIcon, RedoIcon } from './icons';
 import { createScriptSummaryFromIdea, createScriptSummaryFromText, createScriptSummaryFromAudio, developScenesFromSummary, type ScriptSummary, generateVideoPromptFromScenes, refineSceneDescription, refineSceneTransition, startVideoGeneration, pollVideoOperation } from '../services/geminiService';

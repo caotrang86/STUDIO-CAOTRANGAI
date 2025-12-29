@@ -4,10 +4,8 @@
 */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls, useImageEditor } from './uiContexts';
-import { combineImages, downloadImage } from './uiFileUtilities';
-import { useLightbox, useDebounce } from './uiHooks';
-import { cn } from '@/lib/utils';
+import { useAppControls, useImageEditor, useLightbox, useDebounce, combineImages, downloadImage } from './uiUtils';
+import { cn } from '../lib/utils';
 import Lightbox from './Lightbox';
 import { ImageThumbnailActions } from './ImageThumbnailActions';
 import { CloudUploadIcon, LoadingSpinnerIcon } from './icons';

@@ -4,9 +4,7 @@
 */
 import React, { useEffect, useState, useRef, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls, useImageEditor } from './uiContexts';
-import { downloadAllImagesAsZip, combineImages } from './uiFileUtilities';
-import { useLightbox } from './uiHooks';
+import { useAppControls, useImageEditor, useLightbox, downloadAllImagesAsZip, combineImages } from './uiUtils';
 import type { ImageForZip } from './uiTypes';
 import Lightbox from './Lightbox';
 import { ImageThumbnail } from './ImageThumbnail';
