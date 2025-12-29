@@ -428,7 +428,7 @@ export const WebcamCaptureModal: React.FC<WebcamCaptureModalProps> = ({ isOpen, 
 
 // --- ActionablePolaroidCard Component ---
 
-export const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = memo(({
+const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = ({
     mediaUrl,
     caption,
     status,
