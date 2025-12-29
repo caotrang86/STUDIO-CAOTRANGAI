@@ -6,9 +6,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLayerComposerState } from './useLayerComposerState';
-// FIX: Inlined StartScreen component, so removed its import and added useAppControls.
-import { WebcamCaptureModal, useAppControls } from '../uiUtils';
-import { GalleryPicker } from '../ActionablePolaroidCard';
+import { useAppControls } from '../uiUtils';
+import { GalleryPicker, WebcamCaptureModal } from '../ActionablePolaroidCard';
 import { LayerComposerSidebar } from './LayerComposerSidebar';
 import { LayerComposerCanvas } from './LayerComposerCanvas';
 import { AIProcessLogger } from './AIProcessLogger';
@@ -21,39 +20,24 @@ interface LayerComposerModalProps {
     onHide: () => void;
 }
 
-// FIX: Inlined StartScreen to remove dependency on empty module.
-interface StartScreenProps {
-    onCreateNew: () => void;
-    onOpenGallery: () => void;
-    onUpload: () => void;
-    onOpenWebcam: () => void;
-    hasGalleryImages: boolean;
-}
-
-const StartScreen: React.FC<StartScreenProps> = ({
-    onCreateNew,
-    onOpenGallery,
-    onUpload,
-    onOpenWebcam,
-    hasGalleryImages,
-}) => {
+// Wrapper component to conditionally render webcam button
+const CustomStartScreen: React.FC<{ state: any }> = ({ state }) => {
     const { t, settings } = useAppControls();
     return (
         <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-neutral-900/50 rounded-lg p-8">
             <h3 className="text-2xl font-bold text-yellow-400 base-font">{t('layerComposer_title')}</h3>
             <p className="text-neutral-400 text-center max-w-sm">Tạo canvas mới, tải lên ảnh hoặc kéo thả file .json để bắt đầu.</p>
             <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-                <button onClick={onCreateNew} className="btn btn-primary btn-sm">{t('imageEditor_createButton')}</button>
-                <button onClick={onOpenGallery} className="btn btn-secondary btn-sm" disabled={!hasGalleryImages}>{t('imageEditor_galleryButton')}</button>
-                <button onClick={onUpload} className="btn btn-secondary btn-sm">{t('imageEditor_uploadButton')}</button>
+                <button onClick={state.handleCreateNew} className="btn btn-primary btn-sm">{t('imageEditor_createButton')}</button>
+                <button onClick={() => state.setIsGalleryOpen(true)} className="btn btn-secondary btn-sm" disabled={state.imageGallery.length === 0}>{t('imageEditor_galleryButton')}</button>
+                <button onClick={state.handleUploadClick} className="btn btn-secondary btn-sm">{t('imageEditor_uploadButton')}</button>
                 {settings?.enableWebcam && (
-                    <button onClick={onOpenWebcam} className="btn btn-secondary btn-sm">{t('imageEditor_webcamButton')}</button>
+                    <button onClick={() => state.setIsWebcamOpen(true)} className="btn btn-secondary btn-sm">{t('imageEditor_webcamButton')}</button>
                 )}
             </div>
         </div>
     );
 };
-
 
 export const LayerComposerModal: React.FC<LayerComposerModalProps> = ({ isOpen, onClose, onHide }) => {
     const state = useLayerComposerState({ isOpen, onClose, onHide });
@@ -94,13 +78,7 @@ export const LayerComposerModal: React.FC<LayerComposerModalProps> = ({ isOpen, 
                                 multiple
                                 onChange={state.handleFileSelected}
                             />
-                            <StartScreen
-                                onCreateNew={state.handleCreateNew}
-                                onOpenGallery={() => state.setIsGalleryOpen(true)}
-                                onUpload={state.handleUploadClick}
-                                onOpenWebcam={() => state.setIsWebcamOpen(true)}
-                                hasGalleryImages={state.imageGallery.length > 0}
-                            />
+                            <CustomStartScreen state={state} />
                             <AnimatePresence>
                                 {state.isStartScreenDraggingOver && (
                                     <motion.div

@@ -4,7 +4,9 @@
 */
 import React, { useState, useCallback, ChangeEvent, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { type ImageToEdit, useAppControls, handleFileUpload } from './uiUtils';
+import { type ImageToEdit } from './uiTypes';
+import { useAppControls } from './uiContexts';
+import { handleFileUpload } from './uiFileUtilities';
 import { GalleryPicker, WebcamCaptureModal } from './ActionablePolaroidCard';
 import { ImageEditorToolbar } from './ImageEditor/ImageEditorToolbar';
 import { ImageEditorControls } from './ImageEditor/ImageEditorControls';

@@ -51,7 +51,7 @@ interface ActionablePolaroidCardProps {
     regenerationPlaceholder?: string;
 }
 
-// --- Moved Modals to break circular dependency ---
+// --- Local Modal Definitions ---
 
 interface RegenerationModalProps {
     isOpen: boolean;
