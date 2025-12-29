@@ -11,6 +11,7 @@ import { useLightbox, useDebounce } from './uiHooks';
 import { ImageThumbnailActions } from './ImageThumbnailActions';
 import { cn } from '../lib/utils';
 import Lightbox from './Lightbox';
+import { GalleryPicker } from './ActionablePolaroidCard';
 import { 
     CloudUploadIcon, 
     PlacementTopLeftIcon,

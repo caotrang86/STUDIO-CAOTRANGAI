@@ -9,7 +9,7 @@ import { useAppControls, useImageEditor } from './uiContexts';
 import { type ImageForZip } from './uiTypes';
 import { downloadAllImagesAsZip, downloadJson, downloadImage } from './uiFileUtilities';
 import { useDebounce } from './uiHooks';
-import { GalleryPicker } from './uiComponents';
+import { GalleryPicker } from './ActionablePolaroidCard';
 import { useLightbox } from './uiHooks';
 import type { SceneState } from './uiTypes';
 import { CloseIcon, CloudUploadIcon, UndoIcon, RedoIcon } from './icons';
