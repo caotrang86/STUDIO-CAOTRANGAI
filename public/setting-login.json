@@ -1,12 +1,12 @@
 {
-  "enabled": false,
+  "enabled": true,
   "accounts": [
     {
-      "username": "sdvn.vn",
-      "password": "sdvn.vn"
+      "username": "aPix",
+      "password": "sdvn"
     },
     {
-      "username": "any",
+      "username": "sdvn.vn",
       "password": "sdvn.vn"
     }
   ]

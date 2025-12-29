@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "mkdir -p public && cp setting.json public/ && cp setting-login.json public/ && cp info.json public/ && cp -r locales public/ && cp logo_site.png public/ || echo 'Assets copy warning (ignore if files missing)'",
+    "prebuild": "mkdir -p public && cp info.json public/ && cp -r locales public/ && cp logo_site.png public/ || echo 'Assets copy warning'",
     "build": "npm run prebuild && vite build",
     "preview": "vite preview"
   },
