@@ -18,7 +18,7 @@ import { type Layer, type CanvasSettings, type Interaction, type Rect, type Mult
 import { type GenerationHistoryEntry } from '../uiTypes';
 import { type AILogMessage } from './AIProcessLogger';
 import { useDebounce } from '../uiHooks';
-import * as db from '../../lib/db';
+import * as db from '@/src/lib/db';
 
 // --- Utility Functions ---
 

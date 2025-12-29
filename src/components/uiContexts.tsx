@@ -9,7 +9,7 @@ import {
     type AppConfig, THEMES, getInitialStateForApp, type Settings,
     type GenerationHistoryEntry
 } from './uiTypes';
-import * as db from '../lib/db';
+import * as db from '@/src/lib/db';
 
 // --- Auth Context ---
 interface Account {

@@ -5,9 +5,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls, useImageEditor } from './uiContexts';
-import { type ImageForZip } from './uiTypes';
-import { downloadAllImagesAsZip, downloadJson, downloadImage } from './uiFileUtilities';
+import { useAppControls, useImageEditor, type ImageForZip, downloadAllImagesAsZip, downloadJson, downloadImage } from './uiUtils';
 import { useDebounce } from './uiHooks';
 import { GalleryPicker } from './ActionablePolaroidCard';
 import { useLightbox } from './uiHooks';
@@ -20,7 +18,7 @@ import StoryboardingInput from './storyboarding/StoryboardingInput';
 import StoryboardingSummary from './storyboarding/StoryboardingSummary';
 import StoryboardingScenes from './storyboarding/StoryboardingScenes';
 import Lightbox from './Lightbox';
-import * as db from '../lib/db';
+import * as db from '@/src/lib/db';
 
 
 interface StoryboardingModalProps {

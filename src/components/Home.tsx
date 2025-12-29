@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useAppControls, useImageEditor } from './uiContexts';
 import { extractJsonFromPng } from './uiFileUtilities';
 import { type AppConfig } from './uiTypes';
-import * as db from '../lib/db';
+import * as db from '@/src/lib/db';
 import { CloudUploadIcon, LayerComposerIcon, EditorIcon, StoryboardIcon } from './icons';
 
 interface ProcessedAppConfig extends AppConfig {
