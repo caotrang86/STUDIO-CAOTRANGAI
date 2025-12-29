@@ -61,7 +61,6 @@ const ErrorDisplay = ({ message }: { message?: string }) => (
     </div>
 );
 
-// FIX: Modified Placeholder to safely handle `type` as a string, preventing type errors.
 const Placeholder = ({ type = 'person' }: { type?: string }) => {
     const icons = {
         person: <PlaceholderPersonIcon className="w-full h-full" />,

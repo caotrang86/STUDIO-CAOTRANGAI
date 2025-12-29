@@ -19,4 +19,4 @@ export { default as BeforeAfterModal } from './BeforeAfterModal';
 export { default as AppCoverCreatorModal } from './AppCoverCreatorModal';
 export * from './storyboarding';
 export { StoryboardingModal } from './StoryboardingModal';
-// Removed LayerComposerModal export to prevent circular dependencies
+export { LayerComposerModal } from './LayerComposerModal';
