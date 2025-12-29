@@ -85,8 +85,12 @@ export const handler: Handler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { error: "Method not allowed" });
 
   try {
-    // Correctly initialize GoogleGenAI using the process.env.API_KEY directly as per guidelines
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Correctly initialize GoogleGenAI using the process.env.API_KEY or GEMINI_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) {
+        return json(500, { error: "Server configuration error: Missing API Key." });
+    }
+    const ai = new GoogleGenAI({ apiKey });
 
     const contentType = event.headers["content-type"] || "";
     // Handle body encoding correctly
