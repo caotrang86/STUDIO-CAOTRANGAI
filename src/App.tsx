@@ -17,7 +17,7 @@ import UserStatus from './components/UserStatus';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import HistoryPanel from './components/HistoryPanel';
 import { ImageEditorModal } from './components/ImageEditorModal';
-import { LayerComposerModal } from './components/LayerComposerModal';
+import { LayerComposerModal } from './components/LayerComposer/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
 import ImageLayoutModal from './components/ImageLayoutModal';
 import BeforeAfterModal from './components/BeforeAfterModal';
