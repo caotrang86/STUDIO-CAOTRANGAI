@@ -12,15 +12,14 @@ import {
     ImageForZip,
     ResultsView,
     type ImageInterpolationState,
-    useLightbox,
     OptionsPanel,
     PromptResultCard,
-    useVideoGeneration,
     processAndDownloadAll,
     embedJsonInPng,
     getInitialStateForApp,
     useAppControls,
 } from './uiUtils';
+import { useLightbox, useVideoGeneration } from './uiHooks';
 
 interface ImageInterpolationProps {
     mainTitle: string;

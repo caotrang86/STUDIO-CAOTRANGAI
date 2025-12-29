@@ -18,13 +18,12 @@ import {
     OptionsPanel,
     type ImageToRealState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
     getInitialStateForApp,
 } from './uiUtils';
+import { useLightbox, useVideoGeneration } from './uiHooks';
 
 interface ImageToRealProps {
     mainTitle: string;

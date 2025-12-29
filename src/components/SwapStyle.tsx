@@ -18,8 +18,6 @@ import {
     Slider,
     type SwapStyleState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
@@ -27,6 +25,7 @@ import {
     SearchableSelect,
     Switch,
 } from './uiUtils';
+import { useLightbox, useVideoGeneration } from './uiHooks';
 
 interface SwapStyleProps {
     mainTitle: string;

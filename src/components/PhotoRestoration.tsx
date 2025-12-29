@@ -16,12 +16,12 @@ import {
     OptionsPanel,
     type PhotoRestorationState,
     handleFileUpload,
-    useLightbox,
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
     getInitialStateForApp,
 } from './uiUtils';
+import { useLightbox } from './uiHooks';
 
 interface PhotoRestorationProps {
     mainTitle: string;

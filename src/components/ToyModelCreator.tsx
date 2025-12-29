@@ -16,14 +16,13 @@ import {
     OptionsPanel,
     type ToyModelCreatorState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     getInitialStateForApp,
     SearchableSelect,
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
+import { useLightbox, useVideoGeneration } from './uiHooks';
 
 interface ToyModelCreatorProps {
     mainTitle: string;
