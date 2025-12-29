@@ -17,20 +17,21 @@ import UserStatus from './components/UserStatus';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import HistoryPanel from './components/HistoryPanel';
 import { ImageEditorModal } from './components/ImageEditorModal';
+// FIX: Import LayerComposerModal directly from its new location to break circular dependency.
 import { LayerComposerModal } from './components/LayerComposer/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
-import ImageLayoutModal from './components/ImageLayoutModal';
-import BeforeAfterModal from './components/BeforeAfterModal';
-import AppCoverCreatorModal from './components/AppCoverCreatorModal';
-
 import {
+    renderSmartlyWrappedTitle,
     useImageEditor,
     useAppControls,
+    ImageLayoutModal,
+    BeforeAfterModal,
+    AppCoverCreatorModal,
     useAuth,
+    createThumbnailDataUrl,
+    type AppConfig,
+    type GenerationHistoryEntry,
 } from './components/uiUtils';
-import { createThumbnailDataUrl } from './components/uiFileUtilities';
-import { type AppConfig, type GenerationHistoryEntry } from './components/uiTypes';
-import { renderSmartlyWrappedTitle } from './components/uiComponents';
 import { LoadingSpinnerIcon } from './components/icons';
 
 // Lazy load app components for code splitting

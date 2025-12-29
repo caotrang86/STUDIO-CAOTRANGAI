@@ -21,4 +21,4 @@ export { default as BeforeAfterModal } from './BeforeAfterModal';
 export { default as AppCoverCreatorModal } from './AppCoverCreatorModal';
 export * from './storyboarding';
 export { StoryboardingModal } from './StoryboardingModal';
-export { LayerComposerModal } from './LayerComposerModal';
+// LayerComposerModal removed to prevent circular dependency. Import it directly from its file.
