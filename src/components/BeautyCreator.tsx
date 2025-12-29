@@ -16,13 +16,11 @@ import {
     OptionsPanel,
     type BeautyCreatorState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
-    useMediaQuery,
 } from './uiUtils';
+import { useMediaQuery, useLightbox, useVideoGeneration } from './uiHooks';
 import { MagicWandIcon } from './icons';
 
 interface BeautyCreatorProps {

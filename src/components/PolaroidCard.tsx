@@ -4,7 +4,7 @@
 */
 import React, { memo, type DragEvent, type MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import { useAppControls } from './uiContexts';
 import { 
     LoadingSpinnerIcon, 

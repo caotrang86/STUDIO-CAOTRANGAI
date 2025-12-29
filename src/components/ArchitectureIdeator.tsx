@@ -15,13 +15,12 @@ import {
     OptionsPanel,
     type ArchitectureIdeatorState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     SearchableSelect,
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
+import { useLightbox, useVideoGeneration } from './uiHooks';
 
 interface ArchitectureIdeatorProps {
     mainTitle: string;

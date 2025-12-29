@@ -6,12 +6,15 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
-import { useAppControls } from './uiContexts';
+import { useAppControls, useImageEditor } from './uiContexts';
+import { useLightbox } from './uiHooks';
+import { ImageThumbnail } from './ImageThumbnail';
+import { GalleryToolbar } from './GalleryToolbar';
 import { ImageThumbnailActions } from './ImageThumbnailActions';
 import { downloadJson } from './uiFileUtilities';
-import { AvatarCreatorState, BabyPhotoCreatorState } from './uiTypes';
+import { AvatarCreatorState, BabyPhotoCreatorState, ViewState } from './uiTypes';
 export * from './SearchableSelect';
 export { RegenerationModal, GalleryPicker, WebcamCaptureModal } from './ActionablePolaroidCard';
 

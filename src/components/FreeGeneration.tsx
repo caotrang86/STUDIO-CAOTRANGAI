@@ -10,18 +10,16 @@ import Lightbox from './Lightbox';
 import { 
     AppScreenHeader,
     handleFileUpload,
-    useMediaQuery,
     ImageForZip,
     ResultsView,
     OptionsPanel,
     type FreeGenerationState,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     embedJsonInPng,
     useAppControls,
     Switch,
 } from './uiUtils';
+import { useMediaQuery, useLightbox, useVideoGeneration } from './uiHooks';
 import toast from 'react-hot-toast';
 import { MagicWandIcon } from './icons';
 

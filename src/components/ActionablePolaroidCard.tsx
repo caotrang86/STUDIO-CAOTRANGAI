@@ -5,7 +5,7 @@
 import React, { useState, useRef, useCallback, ChangeEvent, memo, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import PolaroidCard from './PolaroidCard';
 import { handleFileUpload, downloadImage } from './uiFileUtilities';
 import { useImageEditor, useAppControls } from './uiContexts';
@@ -13,7 +13,7 @@ import { useLightbox } from './uiHooks';
 import { ImageThumbnail } from './ImageThumbnail';
 import { GalleryToolbar } from './GalleryToolbar';
 import Lightbox from './Lightbox';
-import { CloudUploadIcon, TOOLTIPS } from './icons';
+import { CloudUploadIcon } from './icons';
 
 // NEW: More descriptive card types to centralize logic
 type CardType =
@@ -318,7 +318,7 @@ export const GalleryPicker: React.FC<GalleryPickerProps> = ({ isOpen, onClose, o
                                 </div>
                             ) : (
                                  <div className="text-center text-neutral-400 py-8 flex-1 flex items-center justify-center">
-                                    <p>{t('galleryModal_empty')}</p>
+                                    <p>Thư viện của bạn đang trống.</p>
                                 </div>
                             )}
                              <AnimatePresence>
@@ -635,6 +635,6 @@ export const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = mem
             />
         </>
     );
-});
+};
 
-export default ActionablePolaroidCard;
+export default memo(ActionablePolaroidCard);

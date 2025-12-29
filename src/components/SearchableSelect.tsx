@@ -4,7 +4,7 @@
 */
 import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 
 type Option = string | { group: string; options: string[] };
 

@@ -4,7 +4,7 @@
 */
 import React from 'react';
 import { useAppControls } from './uiContexts';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 
 const LanguageSwitcher: React.FC = () => {
     const { language, handleLanguageChange } = useAppControls();

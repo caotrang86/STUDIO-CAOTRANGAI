@@ -9,19 +9,17 @@ import { generatePatrioticImage, editImageWithPrompt, analyzeAvatarForConcepts }
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
-    useMediaQuery,
     AppScreenHeader,
     ImageUploader,
     ResultsView,
     ImageForZip,
     type AvatarCreatorState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
+import { useMediaQuery, useLightbox, useVideoGeneration } from './uiHooks';
 import { MagicWandIcon } from './icons';
 
 interface AvatarCreatorProps {

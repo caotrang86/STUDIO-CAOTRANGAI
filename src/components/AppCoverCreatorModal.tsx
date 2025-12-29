@@ -9,7 +9,7 @@ import { useAppControls, useImageEditor } from './uiContexts';
 import { combineImages, downloadImage } from './uiFileUtilities';
 import { useLightbox, useDebounce } from './uiHooks';
 import { ImageThumbnailActions } from './ImageThumbnailActions';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import Lightbox from './Lightbox';
 import { GalleryPicker } from './ActionablePolaroidCard';
 import { 

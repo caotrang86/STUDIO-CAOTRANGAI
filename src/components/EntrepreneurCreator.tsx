@@ -9,19 +9,17 @@ import { generateEntrepreneurImage, editImageWithPrompt, analyzeForEntrepreneurC
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
-    useMediaQuery,
     AppScreenHeader,
     ImageUploader,
     ResultsView,
     ImageForZip,
     type EntrepreneurCreatorState,
     handleFileUpload,
-    useLightbox,
-    useVideoGeneration,
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
+import { useMediaQuery, useLightbox, useVideoGeneration } from './uiHooks';
 import { MagicWandIcon } from './icons';
 
 interface EntrepreneurCreatorProps {
