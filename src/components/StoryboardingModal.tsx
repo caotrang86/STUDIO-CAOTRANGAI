@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -6,7 +5,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls } from './uiContexts';
+import { useAppControls } from './uiUtils';
 import { 
     createScriptSummaryFromIdea, 
     createScriptSummaryFromText, 
@@ -92,7 +91,7 @@ export const StoryboardingModal: React.FC<StoryboardingModalProps> = ({ isOpen, 
     const handleRefDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault(); e.stopPropagation(); setIsDraggingRef(false);
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            // FIX: Explicitly cast file to check type
+            // FIX: Explicitly cast file to any or File to avoid 'unknown' errors
             const files = Array.from(e.dataTransfer.files).filter((file: any) => file.type.startsWith('image/'));
             const remainingSlots = 4 - referenceImages.length;
             const filesToAdd = files.slice(0, remainingSlots);

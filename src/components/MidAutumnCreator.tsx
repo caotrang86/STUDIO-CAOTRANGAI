@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -20,7 +19,7 @@ import {
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
-import { useLightbox, useVideoGeneration } from './uiHooks';
+import { useLightbox, useVideoGeneration, useMediaQuery } from './uiHooks';
 
 interface MidAutumnCreatorProps {
     mainTitle: string;
@@ -48,6 +47,7 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
     const { t, settings } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
+    const isMobile = useMediaQuery('(max-width: 768px)');
     
     const generatedUrls = Object.values(appState.generatedImages as Record<string, any>)
         .map((img: any) => img.url)
@@ -382,6 +382,7 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}
                                 regenerationPlaceholder={t('midAutumnCreator_regenPlaceholder')}
+                                isMobile={isMobile}
                             />
                         </motion.div>
                     ))}
@@ -403,6 +404,7 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                                     mediaUrl={videoTask.resultUrl}
                                     error={videoTask.error}
                                     onClick={videoTask.resultUrl ? () => openLightbox(lightboxImages.indexOf(videoTask.resultUrl!)) : undefined}
+                                    isMobile={isMobile}
                                 />
                             </motion.div>
                         );

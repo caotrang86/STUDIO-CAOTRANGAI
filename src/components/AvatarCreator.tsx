@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -20,7 +19,7 @@ import {
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
-import { useLightbox, useVideoGeneration } from './uiHooks';
+import { useLightbox, useVideoGeneration, useMediaQuery } from './uiHooks';
 
 interface AvatarCreatorProps {
     mainTitle: string;
@@ -48,6 +47,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     const { t, settings } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
+    const isMobile = useMediaQuery('(max-width: 768px)');
     
     // Flatten generated images for lightbox
     const generatedUrls = Object.values(appState.generatedImages as Record<string, any>)
@@ -398,6 +398,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}
                                 regenerationPlaceholder={t('avatarCreator_regenPlaceholder')}
+                                isMobile={isMobile}
                             />
                         </motion.div>
                     ))}

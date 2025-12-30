@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -21,18 +20,18 @@ import { ImageEditorModal } from './components/ImageEditorModal';
 // FIX: Import LayerComposerModal directly to break circular dependency.
 import { LayerComposerModal } from './components/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
-import ImageLayoutModal from './components/ImageLayoutModal';
-import BeforeAfterModal from './components/BeforeAfterModal';
-import AppCoverCreatorModal from './components/AppCoverCreatorModal';
 import {
     renderSmartlyWrappedTitle,
     useImageEditor,
     useAppControls,
-    useAuth,
     createThumbnailDataUrl,
     type AppConfig,
     type GenerationHistoryEntry,
 } from './components/uiUtils';
+import { useAuth } from './components/uiContexts';
+import ImageLayoutModal from './components/ImageLayoutModal';
+import BeforeAfterModal from './components/BeforeAfterModal';
+import AppCoverCreatorModal from './components/AppCoverCreatorModal';
 import { LoadingSpinnerIcon } from './components/icons';
 
 // Lazy load app components for code splitting

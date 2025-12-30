@@ -1,11 +1,10 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue } from 'framer-motion';
-import { useAppControls, useImageEditor } from '../uiContexts';
+import { useAppControls, useImageEditor } from '../uiUtils';
 import { extractJsonFromPng } from '../uiFileUtilities';
 import { 
     type Layer, 
@@ -19,8 +18,8 @@ import {
     type CanvasTool,
     type AIPreset
 } from './LayerComposer.types';
-import { generateFromMultipleImages } from '@/src/services/geminiService';
-import { generateFromPreset } from '@/src/services/gemini/presetService';
+import { generateFromMultipleImages } from '../../services/geminiService';
+import { generateFromPreset } from '../../services/gemini/presetService';
 import { AILogMessage } from './AIProcessLogger';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';

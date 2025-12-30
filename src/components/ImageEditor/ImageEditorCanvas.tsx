@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -6,7 +7,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, MotionValue } from 'framer-motion';
 import { type Point, type Rect, type CropResizeHandle, type Tool } from './ImageEditor.types';
 import { getCursorForHandle, isPointInRect } from './ImageEditor.utils';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 import { UndoIcon, RedoIcon, ZoomOutIcon, ZoomInIcon, HandIcon, LoadingSpinnerIcon } from '../icons';
 import { OVERLAY_PADDING } from './ImageEditor.constants';
 

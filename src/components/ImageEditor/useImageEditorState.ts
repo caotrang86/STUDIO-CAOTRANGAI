@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -5,7 +6,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo, ChangeEvent } from 'react';
 import { useMotionValue, useMotionValueEvent } from 'framer-motion';
 import { handleFileUpload, type ImageToEdit } from '../uiUtils';
-import { removeImageBackground, editImageWithPrompt } from '../../services/geminiService';
+import { removeImageBackground, editImageWithPrompt } from '@/src/services/geminiService';
 import { 
     type Tool, type EditorStateSnapshot, type Point, type Rect, type CropResizeHandle, type CropAction,
     type Interaction, type SelectionStroke, type PenNode, type ColorChannel,

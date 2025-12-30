@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -20,7 +19,7 @@ import {
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
-import { useLightbox, useVideoGeneration } from './uiHooks';
+import { useLightbox, useVideoGeneration, useMediaQuery } from './uiHooks';
 
 interface BabyPhotoCreatorProps {
     mainTitle: string;
@@ -48,6 +47,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
     const { t, settings } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
+    const isMobile = useMediaQuery('(max-width: 768px)');
     
     const generatedUrls = Object.values(appState.generatedImages as Record<string, any>)
         .map((img: any) => img.url)
@@ -383,6 +383,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}
                                 regenerationPlaceholder={t('babyPhotoCreator_regenPlaceholder')}
+                                isMobile={isMobile}
                             />
                         </motion.div>
                     ))}

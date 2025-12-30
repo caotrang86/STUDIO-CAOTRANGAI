@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -20,7 +19,7 @@ import {
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
-import { useLightbox, useVideoGeneration } from './uiHooks';
+import { useLightbox, useVideoGeneration, useMediaQuery } from './uiHooks';
 
 interface EntrepreneurCreatorProps {
     mainTitle: string;
@@ -48,6 +47,7 @@ const EntrepreneurCreator: React.FC<EntrepreneurCreatorProps> = (props) => {
     const { t, settings } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
+    const isMobile = useMediaQuery('(max-width: 768px)');
     
     const generatedUrls = Object.values(appState.generatedImages as Record<string, any>)
         .map((img: any) => img.url)
@@ -382,6 +382,7 @@ const EntrepreneurCreator: React.FC<EntrepreneurCreatorProps> = (props) => {
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}
                                 regenerationPlaceholder={t('entrepreneurCreator_regenPlaceholder')}
+                                isMobile={isMobile}
                             />
                         </motion.div>
                     ))}
