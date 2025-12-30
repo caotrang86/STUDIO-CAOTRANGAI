@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateEntrepreneurImage, editImageWithPrompt } from '@/src/services/geminiService';
+import { generateEntrepreneurImage, editImageWithPrompt } from '../services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -149,7 +149,6 @@ const EntrepreneurCreator: React.FC<EntrepreneurCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        // FIX: Cast to avoid 'status does not exist on unknown' error
         const imageToEditState = appState.generatedImages[idea] as { status: string, url?: string } | undefined;
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
             return;

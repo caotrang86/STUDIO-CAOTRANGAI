@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateBabyPhoto, editImageWithPrompt, estimateAgeGroup } from '@/src/services/geminiService';
+import { generateBabyPhoto, editImageWithPrompt } from '../services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -150,7 +150,6 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
     };
 
     const handleRegeneration = async (idea: string, customPrompt: string) => {
-        // FIX: Cast to avoid 'status does not exist on unknown' error
         const imageToEditState = appState.generatedImages[idea] as { status: string, url?: string } | undefined;
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
             return;

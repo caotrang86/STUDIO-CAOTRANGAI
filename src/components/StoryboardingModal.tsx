@@ -15,8 +15,8 @@ import {
     refineSceneDescription,
     refineSceneTransition,
     type ScriptSummary
-} from '@/src/services/geminiService';
-import { generateFreeImage } from '@/src/services/geminiService';
+} from '../services/geminiService';
+import { generateFreeImage } from '../services/geminiService';
 import { GalleryPicker, WebcamCaptureModal } from './ActionablePolaroidCard';
 import {
     StoryboardingInput,

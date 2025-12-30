@@ -4,7 +4,7 @@
 */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls, useImageEditor, useLightbox, useDebounce, combineImages, downloadImage } from './uiUtils';
+import { useAppControls, useImageEditor, combineImages, useLightbox, useDebounce, downloadImage } from './uiUtils';
 import { cn } from '../lib/utils';
 import Lightbox from './Lightbox';
 import { ImageThumbnailActions } from './ImageThumbnailActions';

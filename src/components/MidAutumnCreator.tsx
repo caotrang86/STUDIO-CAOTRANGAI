@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateMidAutumnImage, editImageWithPrompt } from '@/src/services/geminiService';
+import { generateMidAutumnImage, editImageWithPrompt } from '../services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -148,13 +148,12 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
         onStateChange((prevState) => ({ ...prevState, stage: 'results' }));
     };
 
-    const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        // FIX: Cast to avoid 'status does not exist on unknown' error
+    const handleRegeneration = async (idea: string, customPrompt: string) => {
         const imageToEditState = appState.generatedImages[idea] as { status: string, url?: string } | undefined;
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
             return;
         }
-
+        
         const imageUrlToEdit = imageToEditState.url;
         const preGenState = { ...appState };
         onStateChange({

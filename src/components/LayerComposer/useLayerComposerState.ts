@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -25,6 +24,7 @@ import { sendChatMessage } from '@/src/services/gemini/chatService';
 import { AILogMessage } from './AIProcessLogger';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';
+import { removeImageBackground, editImageWithPrompt } from '../../services/geminiService';
 
 export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boolean, onClose: () => void, onHide: () => void }) => {
     const { 
