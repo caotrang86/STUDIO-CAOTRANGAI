@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generatePatrioticImage, editImageWithPrompt } from '../services/geminiService';
+import { generatePatrioticImage, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -160,21 +160,25 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        const imageEntry = (appState.generatedImages as any)[idea];
-        if (!imageEntry || imageEntry.status !== 'done' || !imageEntry.url) return;
+        // FIX: Cast to avoid 'status does not exist on unknown' error
+        const imageToEditState = appState.generatedImages[idea] as { status: string, url?: string } | undefined;
+        if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
+            return;
+        }
 
+        const imageUrlToEdit = imageToEditState.url;
         const preGenState = { ...appState };
         // Set specific image to pending
         onStateChange({
             ...appState,
             generatedImages: {
                 ...appState.generatedImages,
-                [idea]: { status: 'pending', url: imageEntry.url } // Keep url to show overlay? Or clear?
+                [idea]: { status: 'pending', url: imageUrlToEdit } // Keep url to show overlay? Or clear?
             }
         });
 
         try {
-             const resultUrl = await editImageWithPrompt(imageEntry.url, customPrompt, appState.options.aspectRatio, appState.options.removeWatermark);
+             const resultUrl = await editImageWithPrompt(imageUrlToEdit, customPrompt, appState.options.aspectRatio, appState.options.removeWatermark);
              const settingsToEmbed = {
                 viewId: 'avatar-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -200,7 +204,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                 ...prevState,
                 generatedImages: {
                     ...prevState.generatedImages,
-                    [idea]: { status: 'error', error: errorMessage, url: imageEntry.url } // Revert url?
+                    [idea]: { status: 'error', error: errorMessage, url: imageUrlToEdit } // Revert url?
                 }
             }));
         }

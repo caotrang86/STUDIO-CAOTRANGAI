@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateBabyPhoto, editImageWithPrompt, estimateAgeGroup } from '../services/geminiService';
+import { generateBabyPhoto, editImageWithPrompt, estimateAgeGroup } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -154,20 +154,24 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
     };
 
     const handleRegeneration = async (idea: string, customPrompt: string) => {
-        const imageEntry = (appState.generatedImages as any)[idea];
-        if (!imageEntry || imageEntry.status !== 'done' || !imageEntry.url) return;
+        // FIX: Cast to avoid 'status does not exist on unknown' error
+        const imageToEditState = appState.generatedImages[idea] as { status: string, url?: string } | undefined;
+        if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
+            return;
+        }
 
+        const imageUrlToEdit = imageToEditState.url;
         const preGenState = { ...appState };
         onStateChange({
             ...appState,
             generatedImages: {
                 ...appState.generatedImages,
-                [idea]: { status: 'pending', url: imageEntry.url }
+                [idea]: { status: 'pending', url: imageUrlToEdit }
             }
         });
 
         try {
-             const resultUrl = await editImageWithPrompt(imageEntry.url, customPrompt, appState.options.aspectRatio, appState.options.removeWatermark);
+             const resultUrl = await editImageWithPrompt(imageUrlToEdit, customPrompt, appState.options.aspectRatio, appState.options.removeWatermark);
              const settingsToEmbed = {
                 viewId: 'baby-photo-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -193,7 +197,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
                 ...prevState,
                 generatedImages: {
                     ...prevState.generatedImages,
-                    [idea]: { status: 'error', error: errorMessage, url: imageEntry.url }
+                    [idea]: { status: 'error', error: errorMessage, url: imageUrlToEdit }
                 }
             }));
         }
@@ -378,7 +382,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
                                 mediaUrl={result.url}
                                 error={result.error}
                                 onClick={result.url ? () => openLightbox(lightboxImages.indexOf(result.url!)) : undefined}
-                                onRegenerate={(prompt) => handleRegeneration(idea, prompt)}
+                                onRegenerate={(prompt) => handleRegenerateIdea(idea, prompt)}
                                 onGenerateVideoFromPrompt={result.url ? (prompt) => generateVideo(result.url!, prompt) : undefined}
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}

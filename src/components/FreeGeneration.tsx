@@ -4,7 +4,7 @@
 */
 import React, { ChangeEvent, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateFreeImage, editImageWithPrompt, enhancePrompt } from '../services/geminiService';
+import { generateFreeImage, editImageWithPrompt, enhancePrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 

@@ -5,7 +5,7 @@
 import React, { ChangeEvent, useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // FIX: Import 'editImageWithPrompt' to resolve 'Cannot find name' error.
-import { swapImageStyle, mixImageStyle, editImageWithPrompt } from '../services/geminiService';
+import { swapImageStyle, mixImageStyle, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 

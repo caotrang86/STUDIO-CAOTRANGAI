@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateEntrepreneurImage, editImageWithPrompt } from '../services/geminiService';
+import { generateEntrepreneurImage, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -149,20 +149,24 @@ const EntrepreneurCreator: React.FC<EntrepreneurCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        const imageEntry = (appState.generatedImages as any)[idea];
-        if (!imageEntry || imageEntry.status !== 'done' || !imageEntry.url) return;
-
+        // FIX: Cast to avoid 'status does not exist on unknown' error
+        const imageToEditState = appState.generatedImages[idea] as { status: string, url?: string } | undefined;
+        if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
+            return;
+        }
+        
+        const imageUrlToEdit = imageToEditState.url;
         const preGenState = { ...appState };
         onStateChange({
             ...appState,
             generatedImages: {
                 ...appState.generatedImages,
-                [idea]: { status: 'pending', url: imageEntry.url }
+                [idea]: { status: 'pending', url: imageUrlToEdit }
             }
         });
 
         try {
-             const resultUrl = await editImageWithPrompt(imageEntry.url, customPrompt, appState.options.aspectRatio, appState.options.removeWatermark);
+             const resultUrl = await editImageWithPrompt(imageUrlToEdit, customPrompt, appState.options.aspectRatio, appState.options.removeWatermark);
              const settingsToEmbed = {
                 viewId: 'entrepreneur-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -188,7 +192,7 @@ const EntrepreneurCreator: React.FC<EntrepreneurCreatorProps> = (props) => {
                 ...prevState,
                 generatedImages: {
                     ...prevState.generatedImages,
-                    [idea]: { status: 'error', error: errorMessage, url: imageEntry.url }
+                    [idea]: { status: 'error', error: errorMessage, url: imageUrlToEdit }
                 }
             }));
         }

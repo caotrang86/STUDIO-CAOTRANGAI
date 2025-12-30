@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { restoreOldPhoto, editImageWithPrompt } from '../services/geminiService';
+import { restoreOldPhoto, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 

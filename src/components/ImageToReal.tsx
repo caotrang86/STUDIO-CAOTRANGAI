@@ -5,8 +5,8 @@
 import React, { useState, ChangeEvent, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // Import convertImageToRealistic from services
-import { convertImageToRealistic } from '../services/geminiService';
-import { editImageWithPrompt } from '../services/geminiService';
+import { convertImageToRealistic } from '@/src/services/geminiService';
+import { editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -290,42 +290,4 @@ const ImageToReal: React.FC<ImageToRealProps> = (props) => {
                             regenerationTitle={t('common_regenTitle')}
                             regenerationDescription={t('common_regenDescription')}
                             regenerationPlaceholder={t('imageToReal_regenPlaceholder')}
-                            onClick={!appState.error && appState.generatedImage ? () => openLightbox(lightboxImages.indexOf(appState.generatedImage!)) : undefined}
-                        />
-                    </motion.div>
-                    {appState.historicalImages.map(sourceUrl => {
-                        const videoTask = videoTasks[sourceUrl];
-                        if (!videoTask) return null;
-                        return (
-                            <motion.div
-                                className="w-full md:w-auto flex-shrink-0"
-                                key={`${sourceUrl}-video`}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-                            >
-                                <ActionablePolaroidCard
-                                    type="output"
-                                    caption={t('common_video')}
-                                    status={videoTask.status}
-                                    mediaUrl={videoTask.resultUrl}
-                                    error={videoTask.error}
-                                    onClick={videoTask.resultUrl ? () => openLightbox(lightboxImages.indexOf(videoTask.resultUrl!)) : undefined}
-                                />
-                            </motion.div>
-                        );
-                    })}
-                </ResultsView>
-            )}
-
-            <Lightbox
-                images={lightboxImages}
-                selectedIndex={lightboxIndex}
-                onClose={closeLightbox}
-                onNavigate={navigateLightbox}
-            />
-        </div>
-    );
-};
-
-export default ImageToReal;
+                            onClick={!appState.error && appState.generatedImage ? () => openLightbox(lightboxImages.indexOf(appState.generatedImage!))

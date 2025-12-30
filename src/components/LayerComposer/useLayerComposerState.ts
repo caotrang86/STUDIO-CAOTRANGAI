@@ -18,9 +18,9 @@ import {
     type CanvasTool,
     type AIPreset
 } from './LayerComposer.types';
-import { generateFromMultipleImages } from '../../services/gemini/imageEditingService';
-import { generateFromPreset } from '../../services/gemini/presetService';
-import { sendChatMessage } from '../../services/gemini/chatService';
+import { generateFromMultipleImages } from '@/src/services/gemini/imageEditingService';
+import { generateFromPreset } from '@/src/services/gemini/presetService';
+import { sendChatMessage } from '@/src/services/gemini/chatService';
 import { AILogMessage } from './AIProcessLogger';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';
@@ -582,7 +582,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
             Array.from(e.target.files).forEach((file: any) => { 
                 if (file.type && file.type.startsWith('image/')) {
                      const reader = new FileReader();
-                     reader.onloadend = () => {
+                     reader.onload = () => {
                          if (typeof reader.result === 'string') handleAddImage(reader.result);
                      };
                      reader.readAsDataURL(file as Blob);
@@ -621,7 +621,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
              handleCreateNew();
              Array.from(e.dataTransfer.files).forEach((file: any) => { 
                  const reader = new FileReader();
-                 reader.onloadend = () => { if (typeof reader.result === 'string') handleAddImage(reader.result); };
+                 reader.onload = () => { if (typeof reader.result === 'string') handleAddImage(reader.result); };
                  reader.readAsDataURL(file as Blob);
              });
         }

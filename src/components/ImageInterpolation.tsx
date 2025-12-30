@@ -4,7 +4,7 @@
 */
 import React, { useEffect, ChangeEvent, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { analyzeImagePairForPrompt, analyzeImagePairForPromptDeep, analyzeImagePairForPromptExpert, editImageWithPrompt, interpolatePrompts, adaptPromptToContext } from '../services/geminiService';
+import { analyzeImagePairForPrompt, analyzeImagePairForPromptDeep, analyzeImagePairForPromptExpert, editImageWithPrompt, interpolatePrompts, adaptPromptToContext } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 

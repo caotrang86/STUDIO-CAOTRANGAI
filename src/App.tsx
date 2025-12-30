@@ -17,7 +17,6 @@ import UserStatus from './components/UserStatus';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import HistoryPanel from './components/HistoryPanel';
 import { ImageEditorModal } from './components/ImageEditorModal';
-// FIX: Import LayerComposerModal from its specific directory
 import { LayerComposerModal } from './components/LayerComposer/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
 import ImageLayoutModal from './components/ImageLayoutModal';
@@ -109,6 +108,7 @@ function App() {
         closeLayerComposer,
         hideLayerComposer,
         t,
+        importSettingsAndNavigate
     } = useAppControls();
     
     const { imageToEdit, closeImageEditor } = useImageEditor();

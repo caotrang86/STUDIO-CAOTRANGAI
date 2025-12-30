@@ -4,14 +4,14 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateToyModelImage, editImageWithPrompt } from '../services/geminiService';
+import { generateToyModelImage, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
     AppScreenHeader,
     ImageUploader,
     ResultsView,
-    ImageForZip,
+    type ImageForZip,
     OptionsPanel,
     type ToyModelCreatorState,
     handleFileUpload,
