@@ -6,7 +6,7 @@ import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppControls, useImageEditor } from './uiContexts';
 import ExtraTools from './ExtraTools';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import { 
     HomeIcon, 
     BackIcon, 

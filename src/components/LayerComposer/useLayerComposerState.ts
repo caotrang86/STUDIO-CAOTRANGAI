@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue } from 'framer-motion';
 import { useAppControls } from '../uiUtils';
 import { extractJsonFromPng } from '../uiFileUtilities';
@@ -615,14 +615,14 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     // --- File Handling ---
     const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            Array.from(e.target.files).forEach(file => {
-                if (file.type.startsWith('image/')) {
+            Array.from(e.target.files).forEach((file: any) => { // Using any for File/Blob to avoid strict typing issues in this context
+                if (file.type && file.type.startsWith('image/')) {
                      const reader = new FileReader();
                      reader.onloadend = () => {
                          if (typeof reader.result === 'string') handleAddImage(reader.result);
                      };
-                     reader.readAsDataURL(file);
-                } else if (file.name.endsWith('.json') || file.type === 'application/json' || file.type === 'image/png') {
+                     reader.readAsDataURL(file as Blob);
+                } else if (file.name && (file.name.endsWith('.json') || file.type === 'application/json' || file.type === 'image/png')) {
                     // Try loading as preset first if in start screen or dropped on preset area
                     // But if dropped on canvas, could be canvas state?
                     // For now, let's assume JSON/PNG with metadata on canvas is a preset load or canvas load?
@@ -639,6 +639,11 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         setHistory([]);
         setHistoryIndex(-1);
         setCanvasInitialized(true);
+    };
+
+    const handleConfirmNew = () => {
+        handleCreateNew();
+        setIsConfirmingNew(false);
     };
 
     const handleCloseAndReset = () => {
@@ -659,10 +664,10 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
              // For start screen, maybe auto-create canvas and add images
              handleCreateNew();
              // Then process files
-             Array.from(e.dataTransfer.files).forEach(file => {
+             Array.from(e.dataTransfer.files).forEach((file: any) => { // Use any to bypass TS checks for File vs Blob
                  const reader = new FileReader();
                  reader.onloadend = () => { if (typeof reader.result === 'string') handleAddImage(reader.result); };
-                 reader.readAsDataURL(file);
+                 reader.readAsDataURL(file as Blob);
              });
         }
     };
@@ -688,7 +693,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         // Derived
         canUndo, canRedo, selectedLayersForPreset,
         // Actions
-        handleCreateNew, handleCloseAndReset,
+        handleCreateNew, handleConfirmNew, handleCloseAndReset,
         handleAddImage, handleAddText, addLayer,
         updateLayers, handleLayerUpdate, handleLayerDelete, deleteSelectedLayers,
         handleLayersReorder, duplicateLayer, duplicateSelectedLayers, handleDuplicateForDrag, handleResizeSelectedLayers,

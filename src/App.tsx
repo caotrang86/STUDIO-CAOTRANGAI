@@ -20,13 +20,14 @@ import { ImageEditorModal } from './components/ImageEditorModal';
 // FIX: Import LayerComposerModal directly from its new location to break circular dependency.
 import { LayerComposerModal } from './components/LayerComposer/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
+import ImageLayoutModal from './components/ImageLayoutModal';
+import BeforeAfterModal from './components/BeforeAfterModal';
+import AppCoverCreatorModal from './components/AppCoverCreatorModal';
+
 import {
     renderSmartlyWrappedTitle,
     useImageEditor,
     useAppControls,
-    ImageLayoutModal,
-    BeforeAfterModal,
-    AppCoverCreatorModal,
     useAuth,
     createThumbnailDataUrl,
     type AppConfig,
@@ -47,6 +48,7 @@ const SwapStyle = lazy(() => import('./components/SwapStyle'));
 const FreeGeneration = lazy(() => import('./components/FreeGeneration'));
 const ToyModelCreator = lazy(() => import('./components/ToyModelCreator'));
 const ImageInterpolation = lazy(() => import('./components/ImageInterpolation'));
+const ImageToReal = lazy(() => import('./components/ImageToReal'));
 
 
 const AppLoadingFallback = () => (
@@ -68,6 +70,7 @@ const AppComponents: Record<string, any> = {
     'free-generation': { Component: FreeGeneration, settingsKey: 'freeGeneration', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaption1: t(s.uploaderCaption1Key), uploaderDescription1: t(s.uploaderDescription1Key), uploaderCaption2: t(s.uploaderCaption2Key), uploaderDescription2: t(s.uploaderDescription2Key), uploaderCaption3: t(s.uploaderCaption3Key), uploaderDescription3: t(s.uploaderDescription3Key), uploaderCaption4: t(s.uploaderCaption4Key), uploaderDescription4: t(s.uploaderDescription4Key) }) },
     'toy-model-creator': { Component: ToyModelCreator, settingsKey: 'toyModelCreator', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaption: t(s.uploaderCaptionKey), uploaderDescription: t(s.uploaderDescriptionKey) }) },
     'image-interpolation': { Component: ImageInterpolation, settingsKey: 'imageInterpolation', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaptionInput: t(s.uploaderCaptionInputKey), uploaderDescriptionInput: t(s.uploaderDescriptionInputKey), uploaderCaptionOutput: t(s.uploaderCaptionOutputKey), uploaderDescriptionOutput: t(s.uploaderDescriptionOutputKey), uploaderCaptionReference: t(s.uploaderCaptionReferenceKey), uploaderDescriptionReference: t(s.uploaderDescriptionReferenceKey) }) },
+    'image-to-real': { Component: ImageToReal, settingsKey: 'imageToReal', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaption: t(s.uploaderCaptionKey), uploaderDescription: t(s.uploaderDescriptionKey) }) },
 };
 
 
