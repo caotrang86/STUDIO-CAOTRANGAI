@@ -2,12 +2,12 @@
   "enabled": true,
   "accounts": [
     {
-      "username": "sdvn.vn",
-      "password": "sdvn.vn"
+      "username": "caotrang",
+      "password": "caotrang"
     },
     {
-      "username": "user",
-      "password": "123"
+      "username": "xuan",
+      "password": "xuan"
     },
     {
       "username": "admin",
