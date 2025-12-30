@@ -1,8 +1,8 @@
 {
   "version": "Cao Trang AI v1.10 [081025]",
   "developer": {
-    "name": "Phạm Hưng",
-    "url": "https://www.facebook.com/phamhungd/"
+    "name": "Cao Tráng",
+    "url": "https://www.facebook.com/caotranghaqn"
   },
   "notice": {
     "prefix": "Ứng dụng được cung cấp miễn phí tại ",
@@ -12,13 +12,13 @@
   },
   "community": {
     "prefix": "Tìm hiểu thêm và tham gia ",
-    "linkText": "Cộng đồng AI Art Việt Nam",
-    "linkUrl": "https://www.facebook.com/groups/stablediffusion.vn"
+    "linkText": "Cao Trang AI",
+    "linkUrl": "https://www.facebook.com/caotranghaqn"
   },
   "latestUpdate": "🔥 🔥 Thêm tool 'Storyboard' mới, hỗ trợ xây dựng kịch bản - video",
   "videoTutorial": {
     "prefix": "💡 ",
     "linkText": "Video hướng dẫn",
-    "linkUrl": "https://youtu.be/6OdTbtyzpKo"
+    "linkUrl": ""
   }
 }
