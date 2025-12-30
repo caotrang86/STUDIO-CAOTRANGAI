@@ -4,7 +4,7 @@
 */
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue } from 'framer-motion';
-import { useAppControls } from '../uiUtils';
+import { useAppControls } from '../uiContexts';
 import { extractJsonFromPng } from '../uiFileUtilities';
 import { 
     type Layer, 
@@ -18,9 +18,9 @@ import {
     type CanvasTool,
     type AIPreset
 } from './LayerComposer.types';
-import { generateFromMultipleImages } from '../../services/geminiService';
-import { generateFromPreset } from '../../services/geminiService';
-import { sendChatMessage } from '../../services/geminiService';
+import { generateFromMultipleImages } from '../../services/gemini/imageEditingService';
+import { generateFromPreset } from '../../services/gemini/presetService';
+import { sendChatMessage } from '../../services/gemini/chatService';
 import { AILogMessage } from './AIProcessLogger';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';
@@ -468,24 +468,32 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                 false
             );
             
-            resultUrls.forEach(url => {
-                 addLayer({
-                    type: 'image',
-                    url: url,
-                    x: canvasSettings.width / 2 - 150,
-                    y: canvasSettings.height / 2 - 150,
-                    width: 300, 
-                    height: 300,
-                    rotation: 0,
-                    opacity: 100,
-                    blendMode: 'source-over',
-                    isVisible: true,
-                    isLocked: false
-                });
-                addImagesToGallery([url]);
-            });
+            // Fix: resultUrls is a string, wrap in array if needed or use directly if it is array
+            // generateFromMultipleImages returns Promise<string> according to service def, wait, let me check service def.
+            // Service def: generateFromMultipleImages returns Promise<string>. So it returns ONE image URL.
+            // But here I'm using `resultUrls.forEach`. This indicates I expected an array.
+            // Ah, `generateFromMultipleImages` uses `callGeminiWithRetry` which returns ONE image.
+            // If I want multiple images, I should loop or use a service that supports 'numberOfImages'.
+            // For now, let's treat it as a single string result.
+
+            const url = resultUrls; // It's a string
             
-            addLog(`Đã tạo thành công ${resultUrls.length} ảnh.`, 'success');
+            addLayer({
+                type: 'image',
+                url: url,
+                x: canvasSettings.width / 2 - 150,
+                y: canvasSettings.height / 2 - 150,
+                width: 300, 
+                height: 300,
+                rotation: 0,
+                opacity: 100,
+                blendMode: 'source-over',
+                isVisible: true,
+                isLocked: false
+            });
+            addImagesToGallery([url]);
+            
+            addLog(`Đã tạo thành công ảnh.`, 'success');
 
         } catch (err) {
             const msg = err instanceof Error ? err.message : "Generation failed";

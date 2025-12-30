@@ -4,7 +4,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generatePatrioticImage, editImageWithPrompt, analyzeAvatarForConcepts } from '../services/geminiService';
+import { generatePatrioticImage, editImageWithPrompt } from '../services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -18,7 +18,6 @@ import {
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
-    type GeneratedAvatarImage,
 } from './uiUtils';
 import { useLightbox, useVideoGeneration } from './uiHooks';
 
@@ -243,10 +242,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     };
 
     const isLoading = Object.values(appState.generatedImages as Record<string, any>).some(img => img.status === 'pending');
-    
-    // --- Helper for Concepts UI ---
-    // Since we don't have the concept list props passed in explicitly in the interface but they might be passed from App.tsx
-    // For now, I'll implement a simplified options panel.
     
     return (
         <div className="flex flex-col items-center justify-center w-full h-full flex-1 min-h-0">

@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls } from './uiUtils';
+import { useAppControls } from './uiContexts';
 import { 
     createScriptSummaryFromIdea, 
     createScriptSummaryFromText, 
@@ -17,7 +17,7 @@ import {
     type ScriptSummary
 } from '../services/geminiService';
 import { generateFreeImage } from '../services/geminiService';
-import { GalleryPicker, WebcamCaptureModal } from './uiUtils';
+import { GalleryPicker, WebcamCaptureModal } from './ActionablePolaroidCard';
 import {
     StoryboardingInput,
     StoryboardingSummary,

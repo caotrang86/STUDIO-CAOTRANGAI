@@ -373,7 +373,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
                                 mediaUrl={result.url}
                                 error={result.error}
                                 onClick={result.url ? () => openLightbox(lightboxImages.indexOf(result.url!)) : undefined}
-                                onRegenerate={(prompt) => handleRegenerate(idea, prompt)}
+                                onRegenerate={(prompt) => handleRegeneration(idea, prompt)}
                                 onGenerateVideoFromPrompt={result.url ? (prompt) => generateVideo(result.url!, prompt) : undefined}
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}
