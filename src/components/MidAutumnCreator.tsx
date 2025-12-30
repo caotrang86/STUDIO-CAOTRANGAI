@@ -1,10 +1,11 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateMidAutumnImage, editImageWithPrompt } from '../services/geminiService';
+import { generateMidAutumnImage, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -377,7 +378,7 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                                 mediaUrl={result.url}
                                 error={result.error}
                                 onClick={result.url ? () => openLightbox(lightboxImages.indexOf(result.url!)) : undefined}
-                                onRegenerate={(prompt) => handleRegenerateIdea(idea, prompt)}
+                                onRegenerate={(prompt) => handleRegeneration(idea, prompt)}
                                 onGenerateVideoFromPrompt={result.url ? (prompt) => generateVideo(result.url!, prompt) : undefined}
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}

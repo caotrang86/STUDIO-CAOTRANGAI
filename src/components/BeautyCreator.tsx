@@ -5,7 +5,7 @@
 */
 import React, { useState, ChangeEvent, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateBeautyImage, editImageWithPrompt } from '../services/geminiService';
+import { generateBeautyImage, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -403,6 +403,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
                                     mediaUrl={videoTask.resultUrl}
                                     error={videoTask.error}
                                     onClick={videoTask.resultUrl ? () => openLightbox(lightboxImages.indexOf(videoTask.resultUrl!)) : undefined}
+                                    isMobile={isMobile}
                                 />
                             </motion.div>
                         );

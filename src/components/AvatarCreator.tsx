@@ -1,10 +1,11 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generatePatrioticImage, editImageWithPrompt } from '../services/geminiService';
+import { generatePatrioticImage, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 

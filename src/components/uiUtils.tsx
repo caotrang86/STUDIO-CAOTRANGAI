@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -10,4 +11,6 @@ export * from './uiTypes';
 export * from './uiFileUtilities';
 export * from './uiHooks';
 export * from './uiContexts';
-export * from './uiComponents'; 
+export * from './uiComponents';
+// Removed Modal exports to break circular dependencies. 
+// Import them directly in App.tsx or where needed.

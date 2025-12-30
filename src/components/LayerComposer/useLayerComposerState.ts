@@ -1,10 +1,11 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue } from 'framer-motion';
-import { useAppControls, useImageEditor } from '../uiUtils';
+import { useAppControls, useImageEditor } from '../uiContexts';
 import { extractJsonFromPng } from '../uiFileUtilities';
 import { 
     type Layer, 
@@ -63,6 +64,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     // --- History State ---
     const [history, setHistory] = useState<Layer[][]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
+    const interactionStartHistoryState = useRef<Layer[] | null>(null);
     
     // --- AI State ---
     const [aiPrompt, setAiPrompt] = useState('');
@@ -130,8 +132,8 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     }, [canRedo, historyIndex, history]);
 
     const beginInteraction = useCallback(() => {
-        // Optional: Snapshot state before complex interaction if needed.
-    }, []);
+        interactionStartHistoryState.current = JSON.parse(JSON.stringify(layers));
+    }, [layers]);
 
     // --- Layer Operations ---
     
@@ -248,7 +250,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     
     const duplicateSelectedLayers = () => {
         if (selectedLayers.length === 0) return [];
-        
+        beginInteraction();
         let newLayers = [...layers];
         const newSelectedIds: string[] = [];
         
@@ -646,6 +648,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         handleFileSelected,
         handleStartScreenDragOver, handleStartScreenDragLeave, handleStartScreenDrop,
         handleUploadClick: () => fileInputRef.current?.click(),
+        beginInteraction,
         
         // UI Helpers
         t, language, presets, imageGallery, generationHistory,
