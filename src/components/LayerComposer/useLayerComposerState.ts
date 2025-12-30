@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -244,7 +245,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         return newLayer;
     };
     
-    const duplicateSelectedLayers = (): Layer[] => {
+    const duplicateSelectedLayers = () => {
         if (selectedLayers.length === 0) return [];
         
         let newLayers = [...layers];
@@ -444,12 +445,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     };
 
     const onGenerateAILayer = async () => {
-        if (aiPreset !== 'default') {
-            // Preset logic handled separately? 
-            // In the UI, the button calls this. If a preset is loaded, we might need to route there.
-            // But usually the UI logic calls `onGenerateFromPreset` if a preset is active in that section.
-        }
-
         setRunningJobCount(prev => prev + 1);
         addLog(`Đang tạo ${aiNumberOfImages} ảnh từ prompt...`, 'spinner');
         try {
@@ -468,14 +463,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                 false
             );
             
-            // Fix: resultUrls is a string, wrap in array if needed or use directly if it is array
-            // generateFromMultipleImages returns Promise<string> according to service def, wait, let me check service def.
-            // Service def: generateFromMultipleImages returns Promise<string>. So it returns ONE image URL.
-            // But here I'm using `resultUrls.forEach`. This indicates I expected an array.
-            // Ah, `generateFromMultipleImages` uses `callGeminiWithRetry` which returns ONE image.
-            // If I want multiple images, I should loop or use a service that supports 'numberOfImages'.
-            // For now, let's treat it as a single string result.
-
             const url = resultUrls; // It's a string
             
             addLayer({
