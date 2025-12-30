@@ -5,8 +5,7 @@
 import React, { useState, ChangeEvent, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // Import convertImageToRealistic from services
-import { convertImageToRealistic } from '@/src/services/geminiService';
-import { editImageWithPrompt } from '@/src/services/geminiService';
+import { convertImageToRealistic, editImageWithPrompt } from '@/src/services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
 import { 
@@ -290,4 +289,20 @@ const ImageToReal: React.FC<ImageToRealProps> = (props) => {
                             regenerationTitle={t('common_regenTitle')}
                             regenerationDescription={t('common_regenDescription')}
                             regenerationPlaceholder={t('imageToReal_regenPlaceholder')}
-                            onClick={!appState.error && appState.generatedImage ? () => openLightbox(lightboxImages.indexOf(appState.generatedImage!))
+                            onClick={!appState.error && appState.generatedImage ? () => openLightbox(lightboxImages.indexOf(appState.generatedImage!)) : undefined}
+                        />
+                    </motion.div>
+                </ResultsView>
+            )}
+
+            <Lightbox
+                images={lightboxImages}
+                selectedIndex={lightboxIndex}
+                onClose={closeLightbox}
+                onNavigate={navigateLightbox}
+            />
+        </div>
+    );
+};
+
+export default ImageToReal;

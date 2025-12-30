@@ -104,11 +104,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
         ideasToUse.forEach(async (idea) => {
             try {
                 let actualIdea = idea;
-                // Simplified random handling - assume idea string is passed directly if not "Random"
-                // The prompt logic handles "Random" mapping inside the component before calling API usually, 
-                // but here we simplify to relying on the text.
-                // In a full implementation, we'd estimate age and pick a random concept from the service data here.
-
+                
                 const resultUrl = await generateBabyPhoto(
                     appState.uploadedImage!, 
                     actualIdea, 
@@ -382,7 +378,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
                                 mediaUrl={result.url}
                                 error={result.error}
                                 onClick={result.url ? () => openLightbox(lightboxImages.indexOf(result.url!)) : undefined}
-                                onRegenerate={(prompt) => handleRegenerateIdea(idea, prompt)}
+                                onRegenerate={(prompt) => handleRegeneration(idea, prompt)}
                                 onGenerateVideoFromPrompt={result.url ? (prompt) => generateVideo(result.url!, prompt) : undefined}
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}
