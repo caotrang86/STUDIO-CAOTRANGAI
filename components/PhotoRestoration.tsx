@@ -22,6 +22,8 @@ import {
     embedJsonInPng,
     getInitialStateForApp,
 } from './uiUtils';
+import toast from 'react-hot-toast';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface PhotoRestorationProps {
     mainTitle: string;
@@ -46,7 +48,7 @@ const PhotoRestoration: React.FC<PhotoRestorationProps> = (props) => {
         ...headerProps 
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     
     // State for searchable nationality dropdown
@@ -114,12 +116,24 @@ const PhotoRestoration: React.FC<PhotoRestorationProps> = (props) => {
 
     const executeInitialGeneration = async () => {
         if (!appState.uploadedImage) return;
+
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
         
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             const resultUrl = await restoreOldPhoto(appState.uploadedImage, appState.options);
+            
+             // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Phục chế thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'photo-restoration',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },
@@ -142,11 +156,23 @@ const PhotoRestoration: React.FC<PhotoRestorationProps> = (props) => {
     const handleRegeneration = async (prompt: string) => {
         if (!appState.generatedImage) return;
 
+         // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             const resultUrl = await editImageWithPrompt(appState.generatedImage, prompt);
+            
+             // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'photo-restoration',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },

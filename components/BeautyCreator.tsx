@@ -24,6 +24,7 @@ import {
     useMediaQuery,
 } from './uiUtils';
 import { MagicWandIcon } from './icons';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface BeautyCreatorProps {
     mainTitle: string;
@@ -54,7 +55,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
         ...headerProps 
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -129,6 +130,19 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
             return;
         }
 
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        const currentCredits = getUserCredits(username);
+        
+        // Estimate needed credits
+        const count = appState.styleReferenceImage ? 1 : (ideas ? ideas.length : 0);
+        if (currentCredits < count) {
+            toast.error(`Bạn cần ${count} credit nhưng chỉ còn ${currentCredits}.`);
+            return;
+        }
+        // --------------------
+
         hasLoggedGeneration.current = false;
 
         if (appState.styleReferenceImage) {
@@ -139,6 +153,11 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
 
             try {
                 const resultUrl = await generateBeautyImage(appState.uploadedImage, '', appState.options, appState.styleReferenceImage);
+                
+                 // Deduct Credit
+                decreaseUserCredits(username);
+                refreshCredits();
+                
                 const settingsToEmbed = { 
                     viewId: 'beauty-creator', 
                     state: { ...preGenState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -152,6 +171,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
                     historicalImages: [...generatingState.historicalImages, { idea, url: urlWithMetadata }],
                 });
                 addImagesToGallery([urlWithMetadata]);
+                toast.success("Tạo ảnh thành công.");
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
                 onStateChange({
@@ -228,6 +248,11 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
         const processIdea = async (idea: string) => {
             try {
                 const resultUrl = await generateBeautyImage(appState.uploadedImage!, idea, appState.options);
+                
+                // Deduct Credit per image
+                decreaseUserCredits(username);
+                refreshCredits();
+
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 
                 if (!hasLoggedGeneration.current) {
@@ -257,6 +282,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
         const workers = Array(concurrencyLimit).fill(null).map(async () => { while (ideasQueue.length > 0) { const idea = ideasQueue.shift(); if (idea) await processIdea(idea); } });
         await Promise.all(workers);
         onStateChange({ ...currentAppState, stage: 'results' });
+        toast.success("Đã hoàn tất.");
     };
 
     const handleGenerateClick = async () => {
@@ -276,6 +302,12 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
     };
 
     const handleRegeneration = async (idea: string, prompt: string) => {
+         // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         // FIX: Remove 'as any' type cast to fix type error on 'status' property.
         const imageToEditState = appState.generatedImages[idea];
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) return;
@@ -287,6 +319,12 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
 
         try {
             const resultUrl = await editImageWithPrompt(imageUrlToEdit, prompt);
+            
+            // Deduct Credit
+            const next = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công. Còn ${next} lượt.`);
+            
             const settingsToEmbed = {
                 viewId: 'beauty-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },

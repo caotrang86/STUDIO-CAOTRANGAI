@@ -23,6 +23,8 @@ import {
     embedJsonInPng,
     getInitialStateForApp,
 } from './uiUtils';
+import toast from 'react-hot-toast';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface DressTheModelProps {
     mainTitle: string;
@@ -52,7 +54,7 @@ const DressTheModel: React.FC<DressTheModelProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -129,11 +131,24 @@ const DressTheModel: React.FC<DressTheModelProps> = (props) => {
 
     const executeInitialGeneration = async () => {
         if (!appState.modelImage || !appState.clothingImage) return;
+
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
         try {
             // No need to transform options, the service handles '' and 'Tự động' correctly
             const resultUrl = await generateDressedModelImage(appState.modelImage, appState.clothingImage, appState.options);
+            
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo ảnh thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'dress-the-model',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },
@@ -150,10 +165,23 @@ const DressTheModel: React.FC<DressTheModelProps> = (props) => {
     
     const handleRegeneration = async (prompt: string) => {
         if (!appState.generatedImage) return;
+
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
         try {
             const resultUrl = await editImageWithPrompt(appState.generatedImage, prompt);
+            
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'dress-the-model',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },

@@ -10,6 +10,7 @@ import {
     type GenerationHistoryEntry
 } from './uiTypes';
 import * as db from '../lib/db';
+import { getCurrentUsername, getUserCredits } from '../lib/credits';
 
 // --- Auth Context ---
 interface Account {
@@ -68,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         setIsLoggedIn(true);
                         setCurrentUser(null);
                         sessionStorage.removeItem('currentUser');
+                        localStorage.removeItem('caotrang_username'); 
                     } else {
                         // Treat enabled:true or missing enabled property as login required.
                         handleEnabledLogin(settings);
@@ -99,6 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setCurrentUser(username);
             setIsLoggedIn(true);
             sessionStorage.setItem('currentUser', username);
+            // NEW: Save to localStorage for credits system
+            localStorage.setItem('caotrang_username', username);
             return true;
         }
         return false;
@@ -108,6 +112,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCurrentUser(null);
         setIsLoggedIn(false);
         sessionStorage.removeItem('currentUser');
+        // Optional: clear local username, or keep it to remember last user
+        localStorage.removeItem('caotrang_username');
     }, []);
 
     const value = { loginSettings, isLoggedIn, currentUser, isLoading, login, logout };
@@ -205,6 +211,10 @@ interface AppControlContextType {
     isLayerComposerVisible: boolean;
     language: 'vi' | 'en';
     generationHistory: GenerationHistoryEntry[];
+    // NEW: Credits
+    credits: number;
+    refreshCredits: () => void;
+    
     addGenerationToHistory: (entryData: Omit<GenerationHistoryEntry, 'id' | 'timestamp'>) => void;
     addImagesToGallery: (newImages: string[]) => void;
     removeImageFromGallery: (imageIndex: number) => void;
@@ -276,6 +286,26 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const [language, setLanguage] = useState<'vi' | 'en'>(() => (localStorage.getItem('app-language') as 'vi' | 'en') || 'vi');
     const [translations, setTranslations] = useState<Record<string, any>>({});
     const [settings, setSettings] = useState<Settings | null>(null);
+
+    // NEW: Credits State
+    const [credits, setCredits] = useState<number>(5);
+
+    const refreshCredits = useCallback(() => {
+        const username = getCurrentUsername();
+        if (username) {
+            setCredits(getUserCredits(username));
+        } else {
+            setCredits(5); // Default display if not logged in (logic will block anyway)
+        }
+    }, []);
+
+    // Load credits on mount/update
+    useEffect(() => {
+        refreshCredits();
+        // Also listen for login event by checking username periodically or relying on re-renders
+        const interval = setInterval(refreshCredits, 2000);
+        return () => clearInterval(interval);
+    }, [refreshCredits]);
 
     const currentView = viewHistory[historyIndex];
 
@@ -649,6 +679,8 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         isLayerComposerVisible,
         language,
         generationHistory,
+        credits, // Export credits
+        refreshCredits, // Export refresh function
         addGenerationToHistory,
         addImagesToGallery,
         removeImageFromGallery,

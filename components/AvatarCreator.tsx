@@ -23,6 +23,7 @@ import {
     embedJsonInPng,
 } from './uiUtils';
 import { MagicWandIcon } from './icons';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface AvatarCreatorProps {
     mainTitle: string;
@@ -53,7 +54,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -136,6 +137,19 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     const executeGeneration = async (ideas?: string[]) => {
         if (!appState.uploadedImage) return;
 
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        const currentCredits = getUserCredits(username);
+        
+        // Estimate needed credits
+        const count = appState.styleReferenceImage ? 1 : (ideas ? ideas.length : 0);
+        if (currentCredits < count) {
+            toast.error(`Bạn cần ${count} credit nhưng chỉ còn ${currentCredits}.`);
+            return;
+        }
+        // --------------------
+
         hasLoggedGeneration.current = false;
         
         // --- Branch 1: Generation from Style Reference Image ---
@@ -143,21 +157,22 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
             const idea = "Style Reference";
             const preGenState = { ...appState, selectedIdeas: [idea] };
             const stage: 'generating' = 'generating';
-            // FIX: Capture intermediate state to pass to subsequent updates, avoiding stale state issues.
-            // FIX: The status property was being inferred as a generic 'string'. Using 'as const' ensures
-            // it's typed as a literal, which is assignable to the 'ImageStatus' type.
             const generatingState = { ...appState, stage, generatedImages: { [idea]: { status: 'pending' as const } }, selectedIdeas: [idea] };
             onStateChange(generatingState);
 
             try {
                 const resultUrl = await generatePatrioticImage(
                     appState.uploadedImage,
-                    '', // Idea is ignored by service when style ref is passed
+                    '',
                     appState.options.additionalPrompt,
                     appState.options.removeWatermark,
                     appState.options.aspectRatio,
                     appState.styleReferenceImage
                 );
+                
+                // Deduct Credit
+                decreaseUserCredits(username);
+                refreshCredits();
 
                 const settingsToEmbed = {
                     viewId: 'avatar-creator',
@@ -165,8 +180,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                 };
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 logGeneration('avatar-creator', preGenState, urlWithMetadata);
-
-                // FIX: Pass a state object instead of a function to `onStateChange`.
                 onStateChange({
                     ...generatingState,
                     stage: 'results',
@@ -174,10 +187,10 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                     historicalImages: [...generatingState.historicalImages, { idea, url: urlWithMetadata }],
                 });
                 addImagesToGallery([urlWithMetadata]);
+                toast.success(`Tạo ảnh thành công.`);
             } catch (err) {
-                 const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-                 // FIX: Pass a state object instead of a function to `onStateChange`.
-                 onStateChange({
+                const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+                onStateChange({
                     ...generatingState,
                     stage: 'results',
                     generatedImages: { [idea]: { status: 'error' as const, error: errorMessage } },
@@ -185,14 +198,14 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
             }
             return;
         }
-        
-        // --- Branch 2: Generation from Idea List ---
+
+        // --- Branch 2: Generation from Selected Ideas ---
         if (!ideas || ideas.length === 0) return;
         if (ideas.length > maxIdeas && !ideas.includes(t('avatarCreator_randomConcept'))) {
             toast.error(t('avatarCreator_maxIdeasError', maxIdeas));
             return;
         }
-        
+
         const preGenState = { ...appState, selectedIdeas: ideas };
         const randomConceptString = t('avatarCreator_randomConcept');
         
@@ -202,17 +215,17 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         if (randomCount > 0) {
             setIsAnalyzing(true);
             try {
-                const allCategories = IDEAS_BY_CATEGORY.filter((c: any) => c.key !== 'random');
-                const suggestedCategories = await analyzeAvatarForConcepts(appState.uploadedImage, allCategories);
+                const suggestedCategories = await analyzeAvatarForConcepts(appState.uploadedImage, IDEAS_BY_CATEGORY);
                 
                 let ideaPool: string[] = [];
                 if (suggestedCategories.length > 0) {
-                    ideaPool = allCategories
+                    ideaPool = IDEAS_BY_CATEGORY
                         .filter((c: any) => suggestedCategories.includes(c.category))
                         .flatMap((c: any) => c.ideas);
                 }
+                
                 if (ideaPool.length === 0) {
-                    ideaPool = allCategories.flatMap((c: any) => c.ideas);
+                    ideaPool = IDEAS_BY_CATEGORY.flatMap((c: any) => c.ideas);
                 }
                 
                 const randomIdeas: string[] = [];
@@ -233,13 +246,12 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                 setIsAnalyzing(false);
             }
         }
-        
+
         const stage : 'generating' = 'generating';
         onStateChange({ ...appState, stage: stage });
         
         const initialGeneratedImages = { ...appState.generatedImages };
         ideasToGenerate.forEach(idea => {
-            // FIX: Add 'as const' to prevent type widening of 'status' to string.
             initialGeneratedImages[idea] = { status: 'pending' as const };
         });
         
@@ -257,18 +269,22 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         const processIdea = async (idea: string) => {
             try {
                 const resultUrl = await generatePatrioticImage(appState.uploadedImage!, idea, appState.options.additionalPrompt, appState.options.removeWatermark, appState.options.aspectRatio);
+                
+                // Deduct Credit per image
+                decreaseUserCredits(username);
+                refreshCredits();
+
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 
                 if (!hasLoggedGeneration.current) {
                     logGeneration('avatar-creator', preGenState, urlWithMetadata);
                     hasLoggedGeneration.current = true;
                 }
-                
+
                 currentAppState = {
                     ...currentAppState,
                     generatedImages: {
                         ...currentAppState.generatedImages,
-                        // FIX: Add 'as const' to prevent type widening of 'status' to string.
                         [idea]: { status: 'done' as const, url: urlWithMetadata },
                     },
                     historicalImages: [...currentAppState.historicalImages, { idea, url: urlWithMetadata }],
@@ -282,7 +298,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                     ...currentAppState,
                     generatedImages: {
                         ...currentAppState.generatedImages,
-                        // FIX: Add 'as const' to prevent type widening of 'status' to string.
                         [idea]: { status: 'error' as const, error: errorMessage },
                     },
                 };
@@ -303,11 +318,12 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         await Promise.all(workers);
         
         onStateChange({ ...currentAppState, stage: 'results' });
+        toast.success("Đã hoàn tất tạo ảnh.");
     };
 
     const handleGenerateClick = async () => {
         if (appState.styleReferenceImage) {
-            await executeGeneration(); // Call without ideas for style ref mode
+            await executeGeneration();
         } else {
             const effectiveIdeas = appState.selectedIdeas.length > 0
                 ? appState.selectedIdeas
@@ -322,7 +338,12 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        // FIX: Remove 'as any' cast to fix type error on 'status' property.
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const imageToEditState = appState.generatedImages[idea];
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
             return;
@@ -333,12 +354,17 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         
         onStateChange({
             ...appState,
-            // FIX: Add 'as const' to prevent type widening of 'status' to string.
             generatedImages: { ...appState.generatedImages, [idea]: { status: 'pending' as const } }
         });
 
         try {
             const resultUrl = await editImageWithPrompt(imageUrlToEdit, customPrompt);
+            
+            // Deduct Credit
+            const next = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công. Còn ${next} lượt.`);
+
             const settingsToEmbed = {
                 viewId: 'avatar-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -347,7 +373,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
             logGeneration('avatar-creator', preGenState, urlWithMetadata);
             onStateChange({
                 ...appState,
-                // FIX: Add 'as const' to prevent type widening of 'status' to string.
                 generatedImages: { ...appState.generatedImages, [idea]: { status: 'done' as const, url: urlWithMetadata } },
                 historicalImages: [...appState.historicalImages, { idea: `${idea}-edit`, url: urlWithMetadata }],
             });
@@ -356,7 +381,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
             const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
              onStateChange({
                 ...appState,
-                // FIX: Add 'as const' to prevent type widening of 'status' to string.
                 generatedImages: { ...appState.generatedImages, [idea]: { status: 'error' as const, error: errorMessage } }
             });
             console.error(`Failed to regenerate image for ${idea}:`, err);
@@ -364,7 +388,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     };
     
      const handleGeneratedImageChange = (idea: string) => (newUrl: string) => {
-        const newGeneratedImages = { ...appState.generatedImages, [idea]: { status: 'done' as 'done', url: newUrl } };
+        const newGeneratedImages = { ...appState.generatedImages, [idea]: { status: 'done' as const, url: newUrl } };
         const newHistorical = [...appState.historicalImages, { idea: `${idea}-edit`, url: newUrl }];
         onStateChange({ ...appState, generatedImages: newGeneratedImages, historicalImages: newHistorical });
         addImagesToGallery([newUrl]);
@@ -394,6 +418,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     };
 
     const isLoading = appState.stage === 'generating' || isAnalyzing;
+
     const getButtonText = () => {
         if (isAnalyzing) return t('avatarCreator_analyzing');
         if (isLoading) return t('common_creating');
@@ -443,7 +468,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                     transition={{ duration: 0.5 }}
                 >
                     <div className="flex flex-col md:flex-row items-start justify-center gap-8">
-                        <ActionablePolaroidCard
+                         <ActionablePolaroidCard
                             type="photo-input"
                             mediaUrl={appState.uploadedImage}
                             caption={t('avatarCreator_yourImageCaption')}
@@ -451,7 +476,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                             onClick={() => openLightbox(lightboxImages.indexOf(appState.uploadedImage!))}
                             onImageChange={handleUploadedImageChange}
                         />
-                        <div className="w-full md:w-auto">
+                         <div className="w-full md:w-auto">
                             <ActionablePolaroidCard
                                 type="style-input"
                                 mediaUrl={appState.styleReferenceImage ?? undefined}
@@ -468,7 +493,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                     {!appState.styleReferenceImage ? (
                         <div className="w-full max-w-4xl text-center mt-4">
                             <h2 className="base-font font-bold text-2xl text-neutral-200">{t('avatarCreator_selectIdeasTitle', minIdeas, maxIdeas)}</h2>
-                            <p className="text-neutral-400 mb-2">{t('avatarCreator_selectedCount', appState.selectedIdeas.length, maxIdeas)}</p>
+                            <p className="text-neutral-400 mb-4">{t('avatarCreator_selectedCount', appState.selectedIdeas.length, maxIdeas)}</p>
                             <div className="mb-4">
                                 <button
                                     onClick={handleRandomGenerateClick}
@@ -483,6 +508,10 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                                     <div key={categoryObj.category}>
                                         <h3 className="text-xl base-font font-bold text-yellow-400 text-left mb-3 sticky top-0 bg-black/50 py-2 -mx-4 px-4 z-10 flex items-center gap-2">
                                             {categoryObj.category}
+                                            <span className="text-xs font-normal bg-yellow-400/20 text-yellow-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                <MagicWandIcon className="h-3 w-3" />
+                                                {t('avatarCreator_autoAnalysis')}
+                                            </span>
                                         </h3>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                             {categoryObj.ideas.map((p: string) => {
@@ -526,9 +555,9 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                             </select>
                         </div>
                         <div>
-                            <label htmlFor="additional-prompt-avatar" className="block text-left base-font font-bold text-lg text-neutral-200 mb-2">{t('common_additionalNotesOptional')}</label>
+                            <label htmlFor="additional-prompt" className="block text-left base-font font-bold text-lg text-neutral-200 mb-2">{t('common_additionalNotesOptional')}</label>
                             <textarea
-                                id="additional-prompt-avatar"
+                                id="additional-prompt"
                                 value={localPrompt}
                                 onChange={(e) => setLocalPrompt(e.target.value)}
                                 onBlur={() => {
@@ -545,13 +574,13 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                         <div className="flex items-center pt-2">
                             <input
                                 type="checkbox"
-                                id="remove-watermark-avatar"
+                                id="remove-watermark"
                                 checked={appState.options.removeWatermark}
                                 onChange={(e) => handleOptionChange('removeWatermark', e.target.checked)}
                                 className="h-4 w-4 rounded border-neutral-500 bg-neutral-700 text-yellow-400 focus:ring-yellow-400 focus:ring-offset-neutral-800"
                                 aria-label={t('common_removeWatermark')}
                             />
-                            <label htmlFor="remove-watermark-avatar" className="ml-3 block text-sm font-medium text-neutral-300">
+                            <label htmlFor="remove-watermark" className="ml-3 block text-sm font-medium text-neutral-300">
                                 {t('common_removeWatermark')}
                             </label>
                         </div>

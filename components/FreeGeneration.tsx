@@ -25,6 +25,7 @@ import {
 } from './uiUtils';
 import toast from 'react-hot-toast';
 import { MagicWandIcon } from './icons';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface FreeGenerationProps {
     mainTitle: string;
@@ -62,7 +63,7 @@ const FreeGeneration: React.FC<FreeGenerationProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -121,6 +122,19 @@ const FreeGeneration: React.FC<FreeGenerationProps> = (props) => {
             onStateChange({ ...appState, error: "Vui lòng nhập prompt để tạo ảnh." });
             return;
         }
+
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) {
+            toast.error("Bạn chưa đăng nhập, vui lòng đăng nhập lại.");
+            return;
+        }
+        const currentCredits = getUserCredits(username);
+        if (currentCredits <= 0) {
+            toast.error("Bạn đã sử dụng hết 5 lượt tạo ảnh. Vui lòng liên hệ admin để mua thêm credit.");
+            return;
+        }
+        // --------------------
         
         let finalPrompt = appState.options.prompt;
         if (shouldEnhancePrompt && !appState.image1) {
@@ -155,6 +169,12 @@ const FreeGeneration: React.FC<FreeGenerationProps> = (props) => {
                 appState.options.removeWatermark
             );
 
+            // --- Deduct Credit ---
+            const nextCredits = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo ảnh thành công. Bạn còn ${nextCredits} lượt.`);
+            // ---------------------
+
             const settingsToEmbed = {
                 viewId: 'free-generation',
                 state: { ...preGenState, stage: 'configuring', generatedImages: [], historicalImages: [], error: null },
@@ -182,6 +202,12 @@ const FreeGeneration: React.FC<FreeGenerationProps> = (props) => {
     };
 
     const handleRegeneration = async (index: number, prompt: string) => {
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const url = appState.generatedImages[index];
         if (!url) return;
         
@@ -192,6 +218,13 @@ const FreeGeneration: React.FC<FreeGenerationProps> = (props) => {
 
         try {
             const resultUrl = await editImageWithPrompt(url, prompt, undefined, appState.options.removeWatermark);
+            
+            // --- Deduct Credit ---
+            const nextCredits = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công. Còn ${nextCredits} lượt.`);
+            // ---------------------
+
             const settingsToEmbed = {
                 viewId: 'free-generation',
                 state: { ...appState, stage: 'configuring', generatedImages: [], historicalImages: [], error: null },

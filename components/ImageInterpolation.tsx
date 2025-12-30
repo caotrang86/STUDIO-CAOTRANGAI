@@ -21,6 +21,8 @@ import {
     getInitialStateForApp,
     useAppControls,
 } from './uiUtils';
+import toast from 'react-hot-toast';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface ImageInterpolationProps {
     mainTitle: string;
@@ -53,7 +55,7 @@ const ImageInterpolation: React.FC<ImageInterpolationProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const [localGeneratedPrompt, setLocalGeneratedPrompt] = useState(appState.generatedPrompt);
@@ -153,6 +155,12 @@ const ImageInterpolation: React.FC<ImageInterpolationProps> = (props) => {
         const referenceImageToUse = appState.referenceImage || appState.inputImage;
         if (!referenceImageToUse || !appState.generatedPrompt) return;
 
+         // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null, finalPrompt: null });
 
@@ -176,6 +184,11 @@ const ImageInterpolation: React.FC<ImageInterpolationProps> = (props) => {
                 appState.options.aspectRatio,
                 appState.options.removeWatermark
             );
+            
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo ảnh thành công.`);
 
             const settingsToEmbed = {
                 viewId: 'image-interpolation',
@@ -209,6 +222,12 @@ const ImageInterpolation: React.FC<ImageInterpolationProps> = (props) => {
     const handleRegeneration = async (prompt: string) => {
         if (!appState.generatedImage) return;
 
+         // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
@@ -220,6 +239,11 @@ const ImageInterpolation: React.FC<ImageInterpolationProps> = (props) => {
                 appState.options.removeWatermark
             );
             
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'image-interpolation',
                 state: { ...appState, stage: 'configuring', finalPrompt: null, generatedImage: null, historicalImages: [], error: null },

@@ -26,6 +26,7 @@ import {
     embedJsonInPng,
 } from './uiUtils';
 import { MagicWandIcon } from './icons';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface BabyPhotoCreatorProps {
     mainTitle: string;
@@ -56,7 +57,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -139,6 +140,19 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
     const executeGeneration = async (ideas?: string[]) => {
         if (!appState.uploadedImage) return;
 
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        const currentCredits = getUserCredits(username);
+        
+        // Estimate needed credits
+        const count = appState.styleReferenceImage ? 1 : (ideas ? ideas.length : 0);
+        if (currentCredits < count) {
+            toast.error(`Bạn cần ${count} credit nhưng chỉ còn ${currentCredits}.`);
+            return;
+        }
+        // --------------------
+
         hasLoggedGeneration.current = false;
 
         if (appState.styleReferenceImage) {
@@ -160,6 +174,11 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
                     appState.options.aspectRatio,
                     appState.styleReferenceImage
                 );
+                
+                // Deduct Credit
+                decreaseUserCredits(username);
+                refreshCredits();
+
                 const settingsToEmbed = {
                     viewId: 'baby-photo-creator',
                     state: { ...preGenState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -174,6 +193,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
                     historicalImages: [...generatingState.historicalImages, { idea, url: urlWithMetadata }],
                 });
                 addImagesToGallery([urlWithMetadata]);
+                toast.success(`Tạo ảnh thành công.`);
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
                 // FIX: Pass a state object instead of a function to `onStateChange`.
@@ -248,6 +268,11 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
         const processIdea = async (idea: string) => {
             try {
                 const resultUrl = await generateBabyPhoto(appState.uploadedImage!, idea, appState.options.additionalPrompt, appState.options.removeWatermark, appState.options.aspectRatio);
+                
+                 // Deduct Credit per image
+                decreaseUserCredits(username);
+                refreshCredits();
+
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 
                 if (!hasLoggedGeneration.current) {
@@ -294,6 +319,7 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
         await Promise.all(workers);
         
         onStateChange({ ...currentAppState, stage: 'results' });
+        toast.success("Đã hoàn tất tạo ảnh.");
     };
 
     const handleGenerateClick = async () => {
@@ -313,6 +339,12 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         // FIX: Remove 'as any' type cast to fix type error on 'status' property.
         const imageToEditState = appState.generatedImages[idea];
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
@@ -330,6 +362,12 @@ const BabyPhotoCreator: React.FC<BabyPhotoCreatorProps> = (props) => {
 
         try {
             const resultUrl = await editImageWithPrompt(imageUrlToEdit, customPrompt);
+            
+            // Deduct Credit
+            const next = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công. Còn ${next} lượt.`);
+
             const settingsToEmbed = {
                 viewId: 'baby-photo-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },

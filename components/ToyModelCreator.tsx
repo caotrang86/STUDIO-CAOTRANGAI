@@ -24,6 +24,8 @@ import {
     useAppControls,
     embedJsonInPng,
 } from './uiUtils';
+import toast from 'react-hot-toast';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface ToyModelCreatorProps {
     mainTitle: string;
@@ -48,7 +50,7 @@ const ToyModelCreator: React.FC<ToyModelCreatorProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const [localNotes, setLocalNotes] = useState(appState.options.notes);
@@ -174,12 +176,24 @@ const ToyModelCreator: React.FC<ToyModelCreatorProps> = (props) => {
     const executeInitialGeneration = async () => {
         if (!appState.uploadedImage) return;
 
+         // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             // No need to transform options, the service handles '' and 'Tự động' correctly
             const resultUrl = await generateToyModelImage(appState.uploadedImage, appState.concept, appState.options);
+            
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo ảnh thành công.`);
+            
             const settingsToEmbed = {
                 viewId: 'toy-model-creator',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },
@@ -190,7 +204,6 @@ const ToyModelCreator: React.FC<ToyModelCreatorProps> = (props) => {
                 ...appState,
                 stage: 'results',
                 generatedImage: urlWithMetadata,
-                // FIX: Correct typo from 'historical' to 'historicalImages'
                 historicalImages: [...appState.historicalImages, urlWithMetadata],
             });
             addImagesToGallery([urlWithMetadata]);
@@ -203,11 +216,23 @@ const ToyModelCreator: React.FC<ToyModelCreatorProps> = (props) => {
     const handleRegeneration = async (prompt: string) => {
         if (!appState.generatedImage) return;
 
+         // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             const resultUrl = await editImageWithPrompt(appState.generatedImage, prompt);
+            
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'toy-model-creator',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },
@@ -254,7 +279,6 @@ const ToyModelCreator: React.FC<ToyModelCreatorProps> = (props) => {
 
     const currentConceptData = CONCEPTS_DATA[appState.concept as keyof typeof CONCEPTS_DATA] || CONCEPTS_DATA.desktop_model;
 
-    // FIX: Add return statement to render JSX.
     return (
         <div className="flex flex-col items-center justify-center w-full h-full flex-1 min-h-0">
             <AnimatePresence>

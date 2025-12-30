@@ -24,6 +24,8 @@ import {
     embedJsonInPng,
     getInitialStateForApp,
 } from './uiUtils';
+import toast from 'react-hot-toast';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface ArchitectureIdeatorProps {
     mainTitle: string;
@@ -48,7 +50,7 @@ const ArchitectureIdeator: React.FC<ArchitectureIdeatorProps> = (props) => {
         ...headerProps 
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const [localNotes, setLocalNotes] = useState(appState.options.notes);
@@ -98,12 +100,25 @@ const ArchitectureIdeator: React.FC<ArchitectureIdeatorProps> = (props) => {
 
     const executeInitialGeneration = async () => {
         if (!appState.uploadedImage) return;
+
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập lại."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
         
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             const resultUrl = await generateArchitecturalImage(appState.uploadedImage, appState.options, appState.styleReferenceImage);
+
+            // --- Deduct Credit ---
+            const nextCredits = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo ảnh thành công. Bạn còn ${nextCredits} lượt.`);
+            // ---------------------
+
             const settingsToEmbed = { 
                 viewId: 'architecture-ideator', 
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },
@@ -126,11 +141,24 @@ const ArchitectureIdeator: React.FC<ArchitectureIdeatorProps> = (props) => {
     const handleRegeneration = async (prompt: string) => {
         if (!appState.generatedImage) return;
 
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập lại."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             const resultUrl = await editImageWithPrompt(appState.generatedImage, prompt);
+
+             // --- Deduct Credit ---
+            const nextCredits = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo lại ảnh thành công. Bạn còn ${nextCredits} lượt.`);
+            // ---------------------
+
              const settingsToEmbed = { 
                 viewId: 'architecture-ideator', 
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },

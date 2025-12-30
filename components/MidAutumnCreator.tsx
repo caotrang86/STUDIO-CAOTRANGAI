@@ -24,6 +24,7 @@ import {
 } from './uiUtils';
 import { MagicWandIcon } from './icons';
 import { editImageWithPrompt } from '../services/gemini/imageEditingService';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface MidAutumnCreatorProps {
     mainTitle: string;
@@ -54,7 +55,7 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -133,15 +134,25 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
     const executeGeneration = async (ideas?: string[]) => {
         if (!appState.uploadedImage) return;
 
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        const currentCredits = getUserCredits(username);
+        
+        // Estimate needed credits
+        const count = appState.styleReferenceImage ? 1 : (ideas ? ideas.length : 0);
+        if (currentCredits < count) {
+            toast.error(`Bạn cần ${count} credit nhưng chỉ còn ${currentCredits}.`);
+            return;
+        }
+        // --------------------
+
         hasLoggedGeneration.current = false;
 
         if (appState.styleReferenceImage) {
             const idea = "Style Reference";
             const preGenState = { ...appState, selectedIdeas: [idea] };
             const stage: 'generating' = 'generating';
-            // FIX: Capture intermediate state to pass to subsequent updates, avoiding stale state issues.
-            // FIX: The status property was being inferred as a generic 'string'. Using 'as const' ensures
-            // it's typed as a literal, which is assignable to the 'ImageStatus' type.
             const generatingState = { ...appState, stage, generatedImages: { [idea]: { status: 'pending' as const } }, selectedIdeas: [idea] };
             onStateChange(generatingState);
 
@@ -154,13 +165,17 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                     appState.options.aspectRatio,
                     appState.styleReferenceImage
                 );
+                
+                // Deduct Credit
+                decreaseUserCredits(username);
+                refreshCredits();
+
                 const settingsToEmbed = {
                     viewId: 'mid-autumn-creator',
                     state: { ...preGenState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
                 };
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 logGeneration('mid-autumn-creator', preGenState, urlWithMetadata);
-                // FIX: Pass a state object instead of a function to `onStateChange`.
                 onStateChange({
                     ...generatingState,
                     stage: 'results',
@@ -168,9 +183,9 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                     historicalImages: [...generatingState.historicalImages, { idea, url: urlWithMetadata }],
                 });
                 addImagesToGallery([urlWithMetadata]);
+                toast.success("Tạo ảnh thành công.");
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
-                // FIX: Pass a state object instead of a function to `onStateChange`.
                 onStateChange({
                     ...generatingState,
                     stage: 'results',
@@ -233,7 +248,6 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
         
         const initialGeneratedImages = { ...appState.generatedImages };
         ideasToGenerate.forEach(idea => {
-            // FIX: Add 'as const' to prevent type widening of 'status' to string.
             initialGeneratedImages[idea] = { status: 'pending' as const };
         });
         
@@ -251,6 +265,11 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
         const processIdea = async (idea: string) => {
             try {
                 const resultUrl = await generateMidAutumnImage(appState.uploadedImage!, idea, appState.options.additionalPrompt, appState.options.removeWatermark, appState.options.aspectRatio);
+                
+                 // Deduct Credit per image
+                decreaseUserCredits(username);
+                refreshCredits();
+
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 
                 if (!hasLoggedGeneration.current) {
@@ -262,7 +281,6 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                     ...currentAppState,
                     generatedImages: {
                         ...currentAppState.generatedImages,
-                        // FIX: Add 'as const' to prevent type widening of 'status' to string.
                         [idea]: { status: 'done' as const, url: urlWithMetadata },
                     },
                     historicalImages: [...currentAppState.historicalImages, { idea, url: urlWithMetadata }],
@@ -276,7 +294,6 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
                     ...currentAppState,
                     generatedImages: {
                         ...currentAppState.generatedImages,
-                        // FIX: Add 'as const' to prevent type widening of 'status' to string.
                         [idea]: { status: 'error' as const, error: errorMessage },
                     },
                 };
@@ -297,6 +314,7 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
         await Promise.all(workers);
         
         onStateChange({ ...currentAppState, stage: 'results' });
+        toast.success("Đã hoàn tất.");
     };
 
     const handleGenerateClick = async () => {
@@ -316,7 +334,12 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        // FIX: Remove 'as any' type cast to fix type error on 'status' property.
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const imageToEditState = appState.generatedImages[idea];
         if (!imageToEditState || imageToEditState.status !== 'done' || !imageToEditState.url) {
             return;
@@ -327,12 +350,17 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
         
         onStateChange({
             ...appState,
-            // FIX: Add 'as const' to prevent type widening of 'status' to string.
             generatedImages: { ...appState.generatedImages, [idea]: { status: 'pending' as const } }
         });
 
         try {
             const resultUrl = await editImageWithPrompt(imageUrlToEdit, customPrompt);
+            
+            // Deduct Credit
+            const next = decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công. Còn ${next} lượt.`);
+
             const settingsToEmbed = {
                 viewId: 'mid-autumn-creator',
                 state: { ...appState, stage: 'configuring', generatedImages: {}, historicalImages: [], error: null },
@@ -341,7 +369,6 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
             logGeneration('mid-autumn-creator', preGenState, urlWithMetadata);
             onStateChange({
                 ...appState,
-                // FIX: Add 'as const' to prevent type widening of 'status' to string.
                 generatedImages: { ...appState.generatedImages, [idea]: { status: 'done' as const, url: urlWithMetadata } },
                 historicalImages: [...appState.historicalImages, { idea: `${idea}-edit`, url: urlWithMetadata }],
             });
@@ -350,7 +377,6 @@ const MidAutumnCreator: React.FC<MidAutumnCreatorProps> = (props) => {
             const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
              onStateChange({
                 ...appState,
-                // FIX: Add 'as const' to prevent type widening of 'status' to string.
                 generatedImages: { ...appState.generatedImages, [idea]: { status: 'error' as const, error: errorMessage } }
             });
             console.error(`Failed to regenerate image for ${idea}:`, err);

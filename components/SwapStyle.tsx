@@ -4,7 +4,7 @@
 */
 import React, { ChangeEvent, useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// FIX: Import 'editImageWithPrompt' to resolve 'Cannot find name' error.
+import toast from 'react-hot-toast';
 import { swapImageStyle, mixImageStyle, editImageWithPrompt } from '../services/geminiService';
 import ActionablePolaroidCard from './ActionablePolaroidCard';
 import Lightbox from './Lightbox';
@@ -27,6 +27,7 @@ import {
     SearchableSelect,
     Switch,
 } from './uiUtils';
+import { getCurrentUsername, getUserCredits, decreaseUserCredits } from '../lib/credits';
 
 interface SwapStyleProps {
     mainTitle: string;
@@ -53,7 +54,7 @@ const SwapStyle: React.FC<SwapStyleProps> = (props) => {
         ...headerProps
     } = props;
     
-    const { t, settings } = useAppControls();
+    const { t, settings, refreshCredits } = useAppControls();
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     const [localNotes, setLocalNotes] = useState(appState.options.notes);
@@ -109,6 +110,12 @@ const SwapStyle: React.FC<SwapStyleProps> = (props) => {
     const executeInitialGeneration = async () => {
         if (!appState.contentImage) return;
 
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
+
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
@@ -123,6 +130,11 @@ const SwapStyle: React.FC<SwapStyleProps> = (props) => {
             } else {
                 resultUrl = await swapImageStyle(appState.contentImage, appState.options);
             }
+            
+            // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Tạo ảnh thành công.`);
 
             const settingsToEmbed = {
                 viewId: 'swap-style',
@@ -145,12 +157,24 @@ const SwapStyle: React.FC<SwapStyleProps> = (props) => {
     
     const handleRegeneration = async (prompt: string) => {
         if (!appState.generatedImage) return;
+        
+        // --- Credit Check ---
+        const username = getCurrentUsername();
+        if (!username) { toast.error("Vui lòng đăng nhập."); return; }
+        if (getUserCredits(username) <= 0) { toast.error("Hết lượt tạo ảnh."); return; }
+        // --------------------
 
         const preGenState = { ...appState };
         onStateChange({ ...appState, stage: 'generating', error: null });
 
         try {
             const resultUrl = await editImageWithPrompt(appState.generatedImage, prompt);
+            
+             // Deduct Credit
+            decreaseUserCredits(username);
+            refreshCredits();
+            toast.success(`Chỉnh sửa thành công.`);
+
             const settingsToEmbed = {
                 viewId: 'swap-style',
                 state: { ...appState, stage: 'configuring', generatedImage: null, historicalImages: [], error: null },
