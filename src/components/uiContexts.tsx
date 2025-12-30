@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -7,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
     type ImageToEdit, type ViewState, type AnyAppState, type Theme,
     type AppConfig, THEMES, getInitialStateForApp, type Settings,
-    type GenerationHistoryEntry
+    type GenerationHistoryEntry, type AIPreset, type AppControlContextType
 } from './uiTypes';
 import * as db from '@/src/lib/db';
 
@@ -180,70 +181,6 @@ export const useImageEditor = (): ImageEditorContextType => {
     }
     return context;
 };
-
-
-// --- App Control Context ---
-// @ts-ignore - This will be fixed by the uiTypes.ts change
-interface AppControlContextType {
-    currentView: ViewState;
-    settings: Settings | null;
-    theme: Theme;
-    imageGallery: string[];
-    historyIndex: number;
-    viewHistory: ViewState[];
-    isSearchOpen: boolean;
-    isGalleryOpen: boolean;
-    isInfoOpen: boolean;
-    isHistoryPanelOpen: boolean;
-    isExtraToolsOpen: boolean;
-    isImageLayoutModalOpen: boolean;
-    isBeforeAfterModalOpen: boolean;
-    isAppCoverCreatorModalOpen: boolean;
-    isStoryboardingModalMounted: boolean;
-    isStoryboardingModalVisible: boolean;
-    isLayerComposerMounted: boolean;
-    isLayerComposerVisible: boolean;
-    language: 'vi' | 'en';
-    generationHistory: GenerationHistoryEntry[];
-    addGenerationToHistory: (entryData: Omit<GenerationHistoryEntry, 'id' | 'timestamp'>) => void;
-    addImagesToGallery: (newImages: string[]) => void;
-    removeImageFromGallery: (imageIndex: number) => void;
-    replaceImageInGallery: (imageIndex: number, newImageUrl: string) => void;
-    handleThemeChange: (newTheme: Theme) => void;
-    handleLanguageChange: (lang: 'vi' | 'en') => void;
-    navigateTo: (viewId: string) => void;
-    handleStateChange: (newAppState: AnyAppState) => void;
-    handleSelectApp: (appId: string) => void;
-    handleGoHome: () => void;
-    handleGoBack: () => void;
-    handleGoForward: () => void;
-    handleResetApp: () => void;
-    handleOpenSearch: () => void;
-    handleCloseSearch: () => void;
-    handleOpenGallery: () => void;
-    handleCloseGallery: () => void;
-    handleOpenInfo: () => void;
-    handleCloseInfo: () => void;
-    handleOpenHistoryPanel: () => void;
-    handleCloseHistoryPanel: () => void;
-    toggleExtraTools: () => void;
-    openImageLayoutModal: () => void;
-    closeImageLayoutModal: () => void;
-    openBeforeAfterModal: () => void;
-    closeBeforeAfterModal: () => void;
-    openAppCoverCreatorModal: () => void;
-    closeAppCoverCreatorModal: () => void;
-    openStoryboardingModal: () => void;
-    closeStoryboardingModal: () => void;
-    hideStoryboardingModal: () => void;
-    toggleStoryboardingModal: () => void;
-    openLayerComposer: () => void;
-    closeLayerComposer: () => void;
-    hideLayerComposer: () => void;
-    toggleLayerComposer: () => void;
-    importSettingsAndNavigate: (settings: any) => void;
-    t: (key: string, ...args: any[]) => any;
-}
 
 const AppControlContext = createContext<AppControlContextType | undefined>(undefined);
 
@@ -628,6 +565,11 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
     }, [isLayerComposerVisible, hideLayerComposer, openLayerComposer]);
 
+    // Use default presets until we have a service to load them or config
+    const presets: AIPreset[] = [
+        { id: 'default', name: { vi: 'Mặc định', en: 'Default' }, description: { vi: 'Tạo ảnh từ prompt', en: 'Generate from prompt' }, requiresImageContext: false, refine: false, promptTemplate: { vi: '', en: '' } }
+    ];
+
     const value: AppControlContextType = {
         currentView,
         settings,
@@ -687,6 +629,7 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         toggleLayerComposer,
         importSettingsAndNavigate,
         t,
+        presets,
     };
 
     return (

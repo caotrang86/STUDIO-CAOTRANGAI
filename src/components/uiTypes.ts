@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -87,6 +88,14 @@ export interface ImageToEdit {
     onSave: (newUrl: string) => void;
 }
 
+export type AIPreset = {
+    id: string;
+    name: { vi: string; en: string };
+    description: { vi: string; en: string };
+    requiresImageContext: boolean;
+    refine: boolean;
+    promptTemplate: { vi: string; en: string };
+};
 
 // --- Centralized State Definitions ---
 
@@ -467,4 +476,66 @@ export interface GenerationHistoryEntry {
         viewId: string;
         state: AnyAppState;
     };
+}
+
+export interface AppControlContextType {
+    currentView: ViewState;
+    settings: Settings | null;
+    theme: Theme;
+    imageGallery: string[];
+    historyIndex: number;
+    viewHistory: ViewState[];
+    isSearchOpen: boolean;
+    isGalleryOpen: boolean;
+    isInfoOpen: boolean;
+    isHistoryPanelOpen: boolean;
+    isExtraToolsOpen: boolean;
+    isImageLayoutModalOpen: boolean;
+    isBeforeAfterModalOpen: boolean;
+    isAppCoverCreatorModalOpen: boolean;
+    isStoryboardingModalMounted: boolean;
+    isStoryboardingModalVisible: boolean;
+    isLayerComposerMounted: boolean;
+    isLayerComposerVisible: boolean;
+    language: 'vi' | 'en';
+    generationHistory: GenerationHistoryEntry[];
+    addGenerationToHistory: (entryData: Omit<GenerationHistoryEntry, 'id' | 'timestamp'>) => void;
+    addImagesToGallery: (newImages: string[]) => void;
+    removeImageFromGallery: (imageIndex: number) => void;
+    replaceImageInGallery: (imageIndex: number, newImageUrl: string) => void;
+    handleThemeChange: (newTheme: Theme) => void;
+    handleLanguageChange: (lang: 'vi' | 'en') => void;
+    navigateTo: (viewId: string) => void;
+    handleStateChange: (newAppState: AnyAppState) => void;
+    handleSelectApp: (appId: string) => void;
+    handleGoHome: () => void;
+    handleGoBack: () => void;
+    handleGoForward: () => void;
+    handleResetApp: () => void;
+    handleOpenSearch: () => void;
+    handleCloseSearch: () => void;
+    handleOpenGallery: () => void;
+    handleCloseGallery: () => void;
+    handleOpenInfo: () => void;
+    handleCloseInfo: () => void;
+    handleOpenHistoryPanel: () => void;
+    handleCloseHistoryPanel: () => void;
+    toggleExtraTools: () => void;
+    openImageLayoutModal: () => void;
+    closeImageLayoutModal: () => void;
+    openBeforeAfterModal: () => void;
+    closeBeforeAfterModal: () => void;
+    openAppCoverCreatorModal: () => void;
+    closeAppCoverCreatorModal: () => void;
+    openStoryboardingModal: () => void;
+    closeStoryboardingModal: () => void;
+    hideStoryboardingModal: () => void;
+    toggleStoryboardingModal: () => void;
+    openLayerComposer: () => void;
+    closeLayerComposer: () => void;
+    hideLayerComposer: () => void;
+    toggleLayerComposer: () => void;
+    importSettingsAndNavigate: (settings: any) => void;
+    t: (key: string, ...args: any[]) => any;
+    presets: AIPreset[];
 }

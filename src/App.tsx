@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -17,12 +18,12 @@ import UserStatus from './components/UserStatus';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import HistoryPanel from './components/HistoryPanel';
 import { ImageEditorModal } from './components/ImageEditorModal';
-import { LayerComposerModal } from './components/LayerComposer/LayerComposerModal';
+// FIX: Import LayerComposerModal directly to break circular dependency.
+import { LayerComposerModal } from './components/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
 import ImageLayoutModal from './components/ImageLayoutModal';
 import BeforeAfterModal from './components/BeforeAfterModal';
 import AppCoverCreatorModal from './components/AppCoverCreatorModal';
-
 import {
     renderSmartlyWrappedTitle,
     useImageEditor,

@@ -1,10 +1,11 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useMotionValue } from 'framer-motion';
-import { useAppControls } from '../uiContexts';
+import { useAppControls, useImageEditor } from '../uiContexts';
 import { extractJsonFromPng } from '../uiFileUtilities';
 import { 
     type Layer, 
@@ -18,13 +19,11 @@ import {
     type CanvasTool,
     type AIPreset
 } from './LayerComposer.types';
-import { generateFromMultipleImages } from '@/src/services/gemini/imageEditingService';
+import { generateFromMultipleImages } from '@/src/services/geminiService';
 import { generateFromPreset } from '@/src/services/gemini/presetService';
-import { sendChatMessage } from '@/src/services/gemini/chatService';
 import { AILogMessage } from './AIProcessLogger';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';
-import { removeImageBackground, editImageWithPrompt } from '../../services/geminiService';
 
 export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boolean, onClose: () => void, onHide: () => void }) => {
     const { 
@@ -32,8 +31,11 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         t, 
         addImagesToGallery,
         language,
-        generationHistory 
+        generationHistory,
+        presets: appPresets 
     } = useAppControls();
+    
+    const { openImageEditor } = useImageEditor();
 
     const [canvasInitialized, setCanvasInitialized] = useState(false);
     
@@ -463,7 +465,8 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                 false
             );
             
-            const url = resultUrls; // It's a string
+            // Handle single string return from current service implementation
+            const url = resultUrls; 
             
             addLayer({
                 type: 'image',
@@ -614,9 +617,10 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         }
     };
 
-    const presets: AIPreset[] = [
-        { id: 'default', name: { vi: 'Mặc định', en: 'Default' }, description: { vi: 'Tạo ảnh từ prompt', en: 'Generate from prompt' }, requiresImageContext: false, refine: false, promptTemplate: { vi: '', en: '' } },
-    ];
+    // Use presets from app control context instead of hardcoding
+    const presets: AIPreset[] = appPresets ? 
+        appPresets
+        : [];
 
     return {
         // State
@@ -646,7 +650,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         
         // UI Helpers
         t, language, presets, imageGallery, generationHistory,
-        openImageEditor: () => {}, 
+        openImageEditor,
         
         // Chatbot
         onOpenChatbot: () => setIsChatbotOpen(true),

@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -418,6 +419,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                                     mediaUrl={videoTask.resultUrl}
                                     error={videoTask.error}
                                     onClick={videoTask.resultUrl ? () => openLightbox(lightboxImages.indexOf(videoTask.resultUrl!)) : undefined}
+                                    isMobile={isMobile}
                                 />
                             </motion.div>
                         );
