@@ -3,27 +3,54 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-const BASE_CREDITS = 5;
+const DEFAULT_NORMAL_CREDITS = 5;
+const DEFAULT_VIP_CREDITS = 20;
 
 export function getCurrentUsername(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("caotrang_username");
 }
 
+export function getUserRole(username: string): "normal" | "vip" {
+  if (typeof window === "undefined") return "normal";
+  const role = localStorage.getItem("caotrang_role");
+  return (role === "vip") ? "vip" : "normal";
+}
+
+export function getMaxCredits(username: string): number {
+  if (typeof window === "undefined") return DEFAULT_NORMAL_CREDITS;
+  
+  // Ưu tiên lấy từ cấu hình đã lưu khi login
+  const baseKey = `caotrang_base_credits_${username}`;
+  const baseStored = localStorage.getItem(baseKey);
+  
+  if (baseStored) {
+    const parsed = parseInt(baseStored, 10);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+
+  // Fallback theo role nếu không có cấu hình cụ thể
+  const role = getUserRole(username);
+  return role === "vip" ? DEFAULT_VIP_CREDITS : DEFAULT_NORMAL_CREDITS;
+}
+
 export function getUserCredits(username: string): number {
-  if (typeof window === "undefined") return BASE_CREDITS;
-  const stored = localStorage.getItem(`caotrang_credits_${username}`);
-  if (!stored) {
-    // chưa có thì set mặc định = BASE_CREDITS
-    localStorage.setItem(`caotrang_credits_${username}`, String(BASE_CREDITS));
-    return BASE_CREDITS;
+  if (typeof window === "undefined") return DEFAULT_NORMAL_CREDITS;
+  
+  const key = `caotrang_credits_${username}`;
+  const stored = localStorage.getItem(key);
+  
+  if (stored) {
+    const value = parseInt(stored, 10);
+    if (!Number.isNaN(value)) {
+        return value;
+    }
   }
-  const value = parseInt(stored, 10);
-  if (Number.isNaN(value)) {
-    localStorage.setItem(`caotrang_credits_${username}`, String(BASE_CREDITS));
-    return BASE_CREDITS;
-  }
-  return value;
+
+  // Nếu chưa có lịch sử credit, khởi tạo bằng max credits
+  const initial = getMaxCredits(username);
+  localStorage.setItem(key, String(initial));
+  return initial;
 }
 
 export function decreaseUserCredits(username: string): number {
@@ -35,8 +62,9 @@ export function decreaseUserCredits(username: string): number {
   return next;
 }
 
-export function resetUserCredits(username: string, value = BASE_CREDITS) {
+export function resetUserCredits(username: string, value?: number) {
   if (typeof window !== "undefined") {
-    localStorage.setItem(`caotrang_credits_${username}`, String(value));
+    const resetValue = value !== undefined ? value : getMaxCredits(username);
+    localStorage.setItem(`caotrang_credits_${username}`, String(resetValue));
   }
 }

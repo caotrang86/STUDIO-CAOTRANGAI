@@ -10,12 +10,14 @@ import {
     type GenerationHistoryEntry
 } from './uiTypes';
 import * as db from '../lib/db';
-import { getCurrentUsername, getUserCredits } from '../lib/credits';
+import { getCurrentUsername, getUserCredits, getMaxCredits, getUserRole } from '../lib/credits';
 
 // --- Auth Context ---
 interface Account {
     username: string;
     password?: string;
+    role?: "normal" | "vip";
+    credits?: number;
 }
 
 interface LoginSettings {
@@ -45,8 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const defaultSettingsOnError: LoginSettings = {
                 enabled: true,
                 accounts: [
-                    { username: "aPix", password: "sdvn" },
-                    { username: "guest", password: "123" }
+                    { username: "user", password: "123", role: "normal", credits: 5 },
+                    { username: "admin", password: "123", role: "vip", credits: 20 }
                 ]
             };
             
@@ -70,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         setCurrentUser(null);
                         sessionStorage.removeItem('currentUser');
                         localStorage.removeItem('caotrang_username'); 
+                        localStorage.removeItem('caotrang_role');
                     } else {
                         // Treat enabled:true or missing enabled property as login required.
                         handleEnabledLogin(settings);
@@ -101,8 +104,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setCurrentUser(username);
             setIsLoggedIn(true);
             sessionStorage.setItem('currentUser', username);
-            // NEW: Save to localStorage for credits system
+            
+            // --- NEW: Save Role and Base Credits Logic ---
             localStorage.setItem('caotrang_username', username);
+            
+            const role = account.role || 'normal';
+            localStorage.setItem('caotrang_role', role);
+
+            // Determine base credits: use specific config first, then role-based default
+            let baseCredits = 5; // Default normal
+            if (typeof account.credits === 'number') {
+                baseCredits = account.credits;
+            } else if (role === 'vip') {
+                baseCredits = 20;
+            }
+            
+            localStorage.setItem(`caotrang_base_credits_${username}`, String(baseCredits));
+            // ---------------------------------------------
+
             return true;
         }
         return false;
@@ -112,8 +131,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCurrentUser(null);
         setIsLoggedIn(false);
         sessionStorage.removeItem('currentUser');
-        // Optional: clear local username, or keep it to remember last user
         localStorage.removeItem('caotrang_username');
+        localStorage.removeItem('caotrang_role');
+        // Note: We keep credit history in localStorage so users don't lose consumed credits upon logout/login
     }, []);
 
     const value = { loginSettings, isLoggedIn, currentUser, isLoading, login, logout };
@@ -211,8 +231,10 @@ interface AppControlContextType {
     isLayerComposerVisible: boolean;
     language: 'vi' | 'en';
     generationHistory: GenerationHistoryEntry[];
-    // NEW: Credits
+    // NEW: Credits & Role
     credits: number;
+    maxCredits: number;
+    userRole: string;
     refreshCredits: () => void;
     
     addGenerationToHistory: (entryData: Omit<GenerationHistoryEntry, 'id' | 'timestamp'>) => void;
@@ -287,15 +309,21 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const [translations, setTranslations] = useState<Record<string, any>>({});
     const [settings, setSettings] = useState<Settings | null>(null);
 
-    // NEW: Credits State
+    // NEW: Credits State with Role support
     const [credits, setCredits] = useState<number>(5);
+    const [maxCredits, setMaxCredits] = useState<number>(5);
+    const [userRole, setUserRole] = useState<string>('normal');
 
     const refreshCredits = useCallback(() => {
         const username = getCurrentUsername();
         if (username) {
             setCredits(getUserCredits(username));
+            setMaxCredits(getMaxCredits(username));
+            setUserRole(getUserRole(username));
         } else {
-            setCredits(5); // Default display if not logged in (logic will block anyway)
+            setCredits(5); 
+            setMaxCredits(5);
+            setUserRole('normal');
         }
     }, []);
 
@@ -679,8 +707,10 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         isLayerComposerVisible,
         language,
         generationHistory,
-        credits, // Export credits
-        refreshCredits, // Export refresh function
+        credits, 
+        maxCredits, 
+        userRole, 
+        refreshCredits, 
         addGenerationToHistory,
         addImagesToGallery,
         removeImageFromGallery,

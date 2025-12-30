@@ -2,16 +2,34 @@
   "enabled": true,
   "accounts": [
     {
-      "username": "caotrang",
-      "password": "caotrang"
+      "username": "user",
+      "password": "123",
+      "role": "normal",
+      "credits": 5
     },
     {
-      "username": "xuan",
-      "password": "xuan"
+      "username": "vip_user",
+      "password": "123",
+      "role": "vip",
+      "credits": 20
+    },
+    {
+      "username": "super_vip",
+      "password": "123",
+      "role": "vip",
+      "credits": 50
     },
     {
       "username": "admin",
-      "password": "admin"
+      "password": "admin",
+      "role": "vip",
+      "credits": 100
+    }
+    {
+      "username": "xuan",
+      "password": "xuan",
+      "role": "vip",
+      "credits": 100
     }
   ]
 }
