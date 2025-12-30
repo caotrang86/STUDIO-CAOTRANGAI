@@ -19,6 +19,6 @@ export { default as ExtraTools } from './ExtraTools';
 export { default as ImageLayoutModal } from './ImageLayoutModal';
 export { default as BeforeAfterModal } from './BeforeAfterModal';
 export { default as AppCoverCreatorModal } from './AppCoverCreatorModal';
-export * from './storyboarding';
+export * from './storyboarding/index'; // Use explicit index import
 export { StoryboardingModal } from './StoryboardingModal';
 // LayerComposerModal removed to prevent circular dependency. Import it directly from its file.
