@@ -11,8 +11,8 @@ export * from './uiFileUtilities';
 export * from './uiHooks';
 export * from './uiContexts';
 export * from './uiComponents';
-// Removed component exports to prevent circular dependencies. 
-// Import these directly in App.tsx or where needed.
+// We avoid exporting these specific components here to prevent circular dependencies
+// as they often import from uiUtils themselves.
 // export { default as ExtraTools } from './ExtraTools';
 // export { default as ImageLayoutModal } from './ImageLayoutModal';
 // export { default as BeforeAfterModal } from './BeforeAfterModal';

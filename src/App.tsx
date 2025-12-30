@@ -17,7 +17,6 @@ import UserStatus from './components/UserStatus';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import HistoryPanel from './components/HistoryPanel';
 import { ImageEditorModal } from './components/ImageEditorModal';
-// FIX: Import LayerComposerModal directly from its new location to break circular dependency.
 import { LayerComposerModal } from './components/LayerComposer/LayerComposerModal';
 import { StoryboardingModal } from './components/StoryboardingModal';
 import ImageLayoutModal from './components/ImageLayoutModal';

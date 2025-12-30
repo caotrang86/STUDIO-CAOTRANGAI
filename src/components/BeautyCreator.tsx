@@ -50,8 +50,8 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
     const { lightboxIndex, openLightbox, closeLightbox, navigateLightbox } = useLightbox();
     const { videoTasks, generateVideo } = useVideoGeneration();
     
-    const generatedUrls = Object.values(appState.generatedImages)
-        .map(img => img.url)
+    const generatedUrls = Object.values(appState.generatedImages as Record<string, any>)
+        .map((img: any) => img.url)
         .filter((url): url is string => !!url);
         
     const lightboxImages = [appState.uploadedImage, appState.styleReferenceImage, ...generatedUrls, ...appState.historicalImages.map(h => h.url)].filter((img): img is string => !!img);
@@ -149,7 +149,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
     };
 
     const handleRegeneration = async (idea: string, prompt: string) => {
-        const imageEntry = appState.generatedImages[idea];
+        const imageEntry = (appState.generatedImages as any)[idea];
         if (!imageEntry || imageEntry.status !== 'done' || !imageEntry.url) return;
 
         const preGenState = { ...appState };
@@ -215,7 +215,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
             });
         }
         
-        const results = Object.entries(appState.generatedImages)
+        const results = Object.entries(appState.generatedImages as Record<string, any>)
             .filter(([_, val]) => val.status === 'done' && val.url)
             .map(([idea, val]) => ({ url: val.url!, idea }));
             
@@ -228,7 +228,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
         });
     };
 
-    const isLoading = Object.values(appState.generatedImages).some(img => img.status === 'pending');
+    const isLoading = Object.values(appState.generatedImages as Record<string, any>).some(img => img.status === 'pending');
 
     return (
         <div className="flex flex-col items-center justify-center w-full h-full flex-1 min-h-0">
@@ -344,7 +344,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
                     error={appState.error}
                     actions={
                         <>
-                             {Object.values(appState.generatedImages).some(img => img.status === 'done') && (
+                             {Object.values(appState.generatedImages as Record<string, any>).some(img => img.status === 'done') && (
                                 <button onClick={handleDownloadAll} className="btn btn-secondary">
                                     {t('common_downloadAll')}
                                 </button>
@@ -358,7 +358,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
                         </>
                     }
                 >
-                    {Object.entries(appState.generatedImages).map(([idea, result], index) => (
+                    {Object.entries(appState.generatedImages as Record<string, any>).map(([idea, result], index) => (
                          <motion.div
                             className="w-full md:w-auto flex-shrink-0"
                             key={idea}
@@ -373,7 +373,7 @@ const BeautyCreator: React.FC<BeautyCreatorProps> = (props) => {
                                 mediaUrl={result.url}
                                 error={result.error}
                                 onClick={result.url ? () => openLightbox(lightboxImages.indexOf(result.url!)) : undefined}
-                                onRegenerate={(prompt) => handleRegeneration(idea, prompt)}
+                                onRegenerate={(prompt) => handleRegenerate(idea, prompt)}
                                 onGenerateVideoFromPrompt={result.url ? (prompt) => generateVideo(result.url!, prompt) : undefined}
                                 regenerationTitle={t('common_regenTitle')}
                                 regenerationDescription={t('common_regenDescription')}

@@ -93,8 +93,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     const selectedLayerId = selectedLayerIds.length === 1 ? selectedLayerIds[0] : null;
     
     // For Presets: which layers are used as inputs
-    // If simple image mode (multi-input), we use the order of selection.
-    // If batch mode, we iterate over each selected layer.
     const selectedLayersForPreset = selectedLayers; 
     
     const canUndo = historyIndex > 0;
@@ -130,9 +128,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     }, [canRedo, historyIndex, history]);
 
     const beginInteraction = useCallback(() => {
-        // Optional: Snapshot state before complex interaction if needed, 
-        // but typically we snapshot on pointer up / end.
-        // For now, this can be empty or used to set an interaction flag.
+        // Optional: Snapshot state before complex interaction if needed.
     }, []);
 
     // --- Layer Operations ---
@@ -304,8 +300,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                 updates = selectedLayers.map(l => ({ id: l.id, props: { x: minX } }));
                 break;
             case 'align-center':
-                // Align centers horizontally
-                // Center point is average of centers? Or center of bounding box? Usually center of BB.
                 if (selectionBoundingBox) {
                     const centerX = selectionBoundingBox.x + selectionBoundingBox.width / 2;
                     updates = selectedLayers.map(l => ({ id: l.id, props: { x: centerX - l.width / 2 } }));
@@ -334,7 +328,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                 }
                 break;
             case 'distribute-horizontal':
-                 // Sort by X
                  const sortedH = [...selectedLayers].sort((a, b) => a.x - b.x);
                  if (sortedH.length > 2) {
                      const totalWidth = sortedH[sortedH.length - 1].x - sortedH[0].x;
@@ -352,7 +345,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                 break;
              case 'merge':
                 handleMergeLayers();
-                return; // Updates handled in merge function
+                return;
              case 'delete':
                 deleteSelectedLayers();
                 return;
@@ -375,10 +368,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         if (layer.type === 'image' && layer.url) {
             return layer.url;
         }
-        // For text/shape, render to canvas then export
-        // Simplified: use html2canvas or similar, or just render to a temp canvas
-        // Here we'll simulate by returning a placeholder or empty string if it's not an image
-        // In a real app, you'd render the layer to an offscreen canvas
         return ""; 
     };
 
@@ -393,8 +382,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     };
     
     const handleExportSelectedLayers = async () => {
-         // Create a temporary canvas containing just the selected layers
-         // Similar to 'merge' but downloads instead of adding to canvas
          if (selectedLayers.length === 0 || !selectionBoundingBox) return;
 
          const canvas = document.createElement('canvas');
@@ -403,18 +390,10 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
          const ctx = canvas.getContext('2d');
          if (!ctx) return;
          
-         // Sort selected layers by z-index (array order in 'layers')
-         // We need to find their original indices
          const sortedSelection = layers
-             .filter(l => selectedLayerIds.includes(l.id))
-             // layers array is top-to-bottom visually (last element is on top)? 
-             // Actually, usually last element is top. Let's assume standard render order.
-             // If layers[0] is bottom, we iterate normally.
+             .filter(l => selectedLayerIds.includes(l.id));
          
          for (const layer of sortedSelection) {
-             // Draw logic similar to LayerItem or ImageEditorCanvas
-             // This requires actual rendering logic for text/shapes which is complex to duplicate here
-             // For images it's easy.
              if (layer.type === 'image' && layer.url) {
                  const img = new Image();
                  img.crossOrigin = "anonymous";
@@ -424,11 +403,9 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                  });
                  
                  ctx.save();
-                 // Translate to origin (0,0) of the bounding box
                  const x = layer.x - selectionBoundingBox.x;
                  const y = layer.y - selectionBoundingBox.y;
                  
-                 // Apply rotation around center
                  const cx = x + layer.width / 2;
                  const cy = y + layer.height / 2;
                  
@@ -440,7 +417,6 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
                  ctx.drawImage(img, x, y, layer.width, layer.height);
                  ctx.restore();
              }
-             // ... handle text/shape rendering
          }
          
          const dataUrl = canvas.toDataURL('image/png');
@@ -453,14 +429,11 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     };
 
     const handleBakeSelectedLayer = async () => {
-         // Rasterize text/shape to image layer
          if (selectedLayers.length !== 1) return;
-         // Implementation omitted for brevity, would involve rendering to canvas and replacing layer
          toast("Tính năng đang phát triển");
     };
     
     const handleMergeLayers = async () => {
-        // Similar to export but adds new layer and removes selected
         toast("Tính năng gộp layer đang phát triển");
     };
 
@@ -472,14 +445,9 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
 
     const onGenerateAILayer = async () => {
         if (aiPreset !== 'default') {
-            // Handled by preset logic if preset is selected
-            if (loadedPreset) {
-                // Already loaded, just run logic?
-                // The preset UI usually handles this. If we are triggering from sidebar:
-                // We need to ensure loadedPreset is sync'd with aiPreset selection
-                // But sidebar logic for `onGenerateAILayer` usually implies text-to-image or img2img via main prompt
-            }
-            // Fallthrough to generic generation if no specific preset logic in this function
+            // Preset logic handled separately? 
+            // In the UI, the button calls this. If a preset is loaded, we might need to route there.
+            // But usually the UI logic calls `onGenerateFromPreset` if a preset is active in that section.
         }
 
         setRunningJobCount(prev => prev + 1);
@@ -487,11 +455,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         try {
             let inputImageUrls: string[] = [];
             
-            // Collect images if needed
             if (selectedLayers.length > 0) {
-                 // Simple mode: use first layer as input
-                 // Batch mode: use all selected layers
-                 // Here we assume standard text-to-image or img2img with first selected layer
                  if (selectedLayers[0].type === 'image' && selectedLayers[0].url) {
                      inputImageUrls.push(selectedLayers[0].url);
                  }
@@ -500,19 +464,18 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
             const resultUrls = await generateFromMultipleImages(
                 inputImageUrls,
                 aiPrompt,
-                aiAspectRatio, // Use aspect ratio from state
-                false // removeWatermark
+                aiAspectRatio, 
+                false
             );
             
-            // Add results to canvas
             resultUrls.forEach(url => {
                  addLayer({
                     type: 'image',
                     url: url,
-                    x: canvasSettings.width / 2 - 150, // Center roughly
+                    x: canvasSettings.width / 2 - 150,
                     y: canvasSettings.height / 2 - 150,
                     width: 300, 
-                    height: 300, // Placeholder size, will adjust on load if we had async image loading logic
+                    height: 300,
                     rotation: 0,
                     opacity: 100,
                     blendMode: 'source-over',
@@ -545,7 +508,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
 
             if (presetData && presetData.viewId && presetData.state) {
                 setLoadedPreset(presetData);
-                setAiPreset(presetData.viewId); // Sync UI
+                setAiPreset(presetData.viewId);
                 addLog(`Đã tải preset: ${presetData.viewId}`, 'info');
             } else {
                 toast.error("File preset không hợp lệ.");
@@ -562,22 +525,15 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         addLog(`Đang chạy preset ${loadedPreset.viewId}...`, 'spinner');
         
         try {
-             // Logic to handle "Random" concepts is inside generateFromPreset usually or handled here?
-             // The `generateFromPreset` service handles the logic.
-             // We just need to pass the selected layers (inputs).
-             
              let layersToProcess: Layer[][] = [];
              
              if (isSimpleImageMode) {
-                 // Multi-input mode: pass all selected layers as a single set of inputs
                  layersToProcess.push(selectedLayers);
              } else {
-                 // Batch mode: treat each selected layer as a separate input set
                  selectedLayers.forEach(l => layersToProcess.push([l]));
              }
              
              if (layersToProcess.length === 0 && loadedPreset.state.uploadedImage) {
-                 // Preset has embedded image, use it if no selection
                  layersToProcess.push([]);
              }
 
@@ -615,19 +571,13 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     // --- File Handling ---
     const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            Array.from(e.target.files).forEach((file: any) => { // Using any for File/Blob to avoid strict typing issues in this context
+            Array.from(e.target.files).forEach((file: any) => { 
                 if (file.type && file.type.startsWith('image/')) {
                      const reader = new FileReader();
                      reader.onloadend = () => {
                          if (typeof reader.result === 'string') handleAddImage(reader.result);
                      };
                      reader.readAsDataURL(file as Blob);
-                } else if (file.name && (file.name.endsWith('.json') || file.type === 'application/json' || file.type === 'image/png')) {
-                    // Try loading as preset first if in start screen or dropped on preset area
-                    // But if dropped on canvas, could be canvas state?
-                    // For now, let's assume JSON/PNG with metadata on canvas is a preset load or canvas load?
-                    // If it's a full canvas state save:
-                    // ... implementation for loading canvas state
                 }
             });
         }
@@ -660,11 +610,8 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
     const handleStartScreenDrop = (e: React.DragEvent) => {
         e.preventDefault(); setIsStartScreenDraggingOver(false);
         if (e.dataTransfer.files) {
-             // Handle files
-             // For start screen, maybe auto-create canvas and add images
              handleCreateNew();
-             // Then process files
-             Array.from(e.dataTransfer.files).forEach((file: any) => { // Use any to bypass TS checks for File vs Blob
+             Array.from(e.dataTransfer.files).forEach((file: any) => { 
                  const reader = new FileReader();
                  reader.onloadend = () => { if (typeof reader.result === 'string') handleAddImage(reader.result); };
                  reader.readAsDataURL(file as Blob);
@@ -672,11 +619,8 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         }
     };
 
-    // --- Presets Data ---
-    // In a real app, these would come from the apps config
     const presets: AIPreset[] = [
         { id: 'default', name: { vi: 'Mặc định', en: 'Default' }, description: { vi: 'Tạo ảnh từ prompt', en: 'Generate from prompt' }, requiresImageContext: false, refine: false, promptTemplate: { vi: '', en: '' } },
-        // ... Populate from settings.apps
     ];
 
     return {
@@ -707,7 +651,7 @@ export const useLayerComposerState = ({ isOpen, onClose, onHide }: { isOpen: boo
         
         // UI Helpers
         t, language, presets, imageGallery, generationHistory,
-        openImageEditor: () => {}, // Placeholder, pass actual opener if needed or use context inside components
+        openImageEditor: () => {}, 
         
         // Chatbot
         onOpenChatbot: () => setIsChatbotOpen(true),

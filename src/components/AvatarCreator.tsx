@@ -18,6 +18,7 @@ import {
     processAndDownloadAll,
     useAppControls,
     embedJsonInPng,
+    type GeneratedAvatarImage,
 } from './uiUtils';
 import { useLightbox, useVideoGeneration } from './uiHooks';
 
@@ -49,8 +50,8 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     const { videoTasks, generateVideo } = useVideoGeneration();
     
     // Flatten generated images for lightbox
-    const generatedUrls = Object.values(appState.generatedImages)
-        .map(img => img.url)
+    const generatedUrls = Object.values(appState.generatedImages as Record<string, any>)
+        .map((img: any) => img.url)
         .filter((url): url is string => !!url);
         
     const lightboxImages = [appState.uploadedImage, appState.styleReferenceImage, ...generatedUrls, ...appState.historicalImages.map(h => h.url)].filter((img): img is string => !!img);
@@ -110,21 +111,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                 let actualIdea = idea;
                 // Handle "Random"
                 if (idea === t('avatarCreator_randomConcept')) {
-                     // Logic handled inside service or here? 
-                     // For simplicity, let's keep the random logic here or in service.
-                     // The service `generatePatrioticImage` expects a specific idea.
-                     // If we want real random, we should pick one.
-                     // For now, let's pass the "Random" string and let the service/prompt handle generic creation if possible,
-                     // or pick a random one from a list.
-                     // A better approach: Analyze image and pick idea.
-                     const categories = [
-                        { category: "Khoảnh Khắc Tự Hào", ideas: [] },
-                        { category: "Biểu tượng & Văn hóa", ideas: [] },
-                         // ... (full list not needed here if service handles it, but service needs list)
-                     ];
-                     // Call service to get suggestion if needed, or just pass generic prompt.
-                     // Assuming service handles 'Ngẫu nhiên' or we pick one here.
-                     // Let's assume we proceed with the string as is, the prompt will be generic.
+                     // Logic handled in service or pre-processing if needed
                 }
 
                 const resultUrl = await generatePatrioticImage(
@@ -142,9 +129,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                 };
                 const urlWithMetadata = await embedJsonInPng(resultUrl, settingsToEmbed, settings.enableImageMetadata);
                 
-                // Only log one generation for the batch to avoid spamming history? 
-                // Or log each? Let's log the first one or just one entry for the batch.
-                // Actually, let's log each successful one.
                 logGeneration('avatar-creator', preGenState, urlWithMetadata);
 
                 onStateChange((prevState) => ({
@@ -177,7 +161,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
     };
 
     const handleRegenerateIdea = async (idea: string, customPrompt: string) => {
-        const imageEntry = appState.generatedImages[idea];
+        const imageEntry = (appState.generatedImages as any)[idea];
         if (!imageEntry || imageEntry.status !== 'done' || !imageEntry.url) return;
 
         const preGenState = { ...appState };
@@ -245,7 +229,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         }
         
         // Convert map to array
-        const results = Object.entries(appState.generatedImages)
+        const results = Object.entries(appState.generatedImages as Record<string, any>)
             .filter(([_, val]) => val.status === 'done' && val.url)
             .map(([idea, val]) => ({ url: val.url!, idea }));
             
@@ -258,7 +242,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
         });
     };
 
-    const isLoading = Object.values(appState.generatedImages).some(img => img.status === 'pending');
+    const isLoading = Object.values(appState.generatedImages as Record<string, any>).some(img => img.status === 'pending');
     
     // --- Helper for Concepts UI ---
     // Since we don't have the concept list props passed in explicitly in the interface but they might be passed from App.tsx
@@ -381,7 +365,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                     error={appState.error}
                     actions={
                         <>
-                             {Object.values(appState.generatedImages).some(img => img.status === 'done') && (
+                             {Object.values(appState.generatedImages as Record<string, any>).some(img => img.status === 'done') && (
                                 <button onClick={handleDownloadAll} className="btn btn-secondary">
                                     {t('common_downloadAll')}
                                 </button>
@@ -395,7 +379,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = (props) => {
                         </>
                     }
                 >
-                    {Object.entries(appState.generatedImages).map(([idea, result], index) => (
+                    {Object.entries(appState.generatedImages as Record<string, any>).map(([idea, result], index) => (
                          <motion.div
                             className="w-full md:w-auto flex-shrink-0"
                             key={idea}

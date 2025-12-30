@@ -97,7 +97,7 @@ export const StoryboardingModal: React.FC<StoryboardingModalProps> = ({ isOpen, 
             const filesToAdd = files.slice(0, remainingSlots);
             filesToAdd.forEach(file => {
                 const reader = new FileReader();
-                reader.onloadend = () => { setReferenceImages(prev => [...prev, reader.result as string]); };
+                reader.onload = () => { setReferenceImages(prev => [...prev, reader.result as string]); };
                 reader.readAsDataURL(file as Blob);
             });
         }
@@ -119,7 +119,7 @@ export const StoryboardingModal: React.FC<StoryboardingModalProps> = ({ isOpen, 
                 const blob = await res.blob();
                 return new Promise<{ mimeType: string, data: string }>((resolve) => {
                     const reader = new FileReader();
-                    reader.onloadend = () => {
+                    reader.onload = () => {
                         const base64data = (reader.result as string).split(',')[1];
                         resolve({ mimeType: blob.type, data: base64data });
                     };
