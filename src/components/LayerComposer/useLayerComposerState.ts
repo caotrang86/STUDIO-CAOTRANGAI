@@ -19,8 +19,8 @@ import {
     type CanvasTool,
     type AIPreset
 } from './LayerComposer.types';
-import { generateFromMultipleImages } from '../../services/geminiService';
-import { generateFromPreset } from '../../services/gemini/presetService';
+import { generateFromMultipleImages } from '@/src/services/geminiService';
+import { generateFromPreset } from '@/src/services/gemini/presetService';
 import { AILogMessage } from './AIProcessLogger';
 import { nanoid } from 'nanoid';
 import toast from 'react-hot-toast';

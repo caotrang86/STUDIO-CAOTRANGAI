@@ -1,19 +1,16 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppControls } from '../uiContexts';
-import { Switch } from '../uiComponents';
-import { type GenerationHistoryEntry } from '../uiTypes';
+import { useAppControls, Switch, type GenerationHistoryEntry } from '../uiUtils';
 import { type Layer, type CanvasSettings, type CanvasTool, type AIPreset } from './LayerComposer.types';
 import { LayerList } from './LayerList';
 import { TextLayerControls } from './TextLayerControls';
 import { LayerPropertiesControls } from './LayerPropertiesControls';
 import { cn } from '../../lib/utils';
-import { AccordionArrowIcon, AddTextIcon, AddIcon, ChatIcon, NewFileIcon } from '../icons';
+import { AccordionArrowIcon, AddTextIcon, AddIcon, InfoIcon, ChatIcon, NewFileIcon } from '../icons';
 import { PresetControls } from './PresetControls';
 
 interface LayerComposerSidebarProps {
@@ -100,7 +97,7 @@ export const LayerComposerSidebar: React.FC<LayerComposerSidebarProps> = (props)
     const [activeTab, setActiveTab] = useState<'properties' | 'text'>('properties');
     const selectedLayer = selectedLayers[0];
     const isGenerating = runningJobCount > 0;
-    const ASPECT_RATIO_OPTIONS: string[] = t('aspectRatioOptions');
+    const ASPECT_RATIO_OPTIONS = ['1:1', '3:4', '4:3', '9:16', '16:9', '2:3', '4:5', '3:2', '5:4', '21:9'];
 
     useEffect(() => {
         if (selectedLayer) {
@@ -325,7 +322,7 @@ export const LayerComposerSidebar: React.FC<LayerComposerSidebarProps> = (props)
                 </div>
                 <div className="border border-neutral-700 rounded-lg overflow-hidden">
                     <AccordionHeader title={t('layerComposer_canvasSettings')} isOpen={openSection === 'canvas'} onClick={() => toggleSection('canvas')} />
-                     <AnimatePresence> {openSection === 'canvas' && ( <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-neutral-800/50"> <div className="p-3 space-y-4"> <div className={cn("grid grid-cols-3 gap-3 text-sm items-end transition-opacity", isInfiniteCanvas && "opacity-50 pointer-events-none")}> <div><label htmlFor="canvas-w">{t('layerComposer_width')}</label><input id="canvas-w" type="number" value={canvasSettings.width} onChange={e => onCanvasSettingsChange(s => ({...s, width: Number(e.target.value)}))} className="form-input !p-1.5 !text-sm" disabled={isInfiniteCanvas}/></div> <div><label htmlFor="canvas-h">{t('layerComposer_height')}</label><input id="canvas-h" type="number" value={canvasSettings.height} onChange={e => onCanvasSettingsChange(s => ({...s, height: Number(e.target.value)}))} className="form-input !p-1.5 !text-sm" disabled={isInfiniteCanvas}/></div> <div className="flex justify-center items-center h-full pb-1"> <div className="relative w-8 h-8" title={t('layerComposer_background')}> <input id="canvas-bg" type="color" value={canvasSettings.background || '#000000'} onChange={e => onCanvasSettingsChange(s => ({...s, background: e.target.value}))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={isInfiniteCanvas}/> <div className="w-full h-full rounded-full border-2 border-white/20 shadow-inner pointer-events-none" style={{ backgroundColor: canvasSettings.background || 'transparent' }} /> </div> </div> </div> <div className="flex items-center justify-between mt-2"> <label htmlFor="infinite-canvas-toggle" className="text-sm font-medium text-neutral-200">{t('layerComposer_infiniteCanvas')}</label> <Switch id="infinite-canvas-toggle" checked={isInfiniteCanvas} onChange={setIsInfiniteCanvas} /> </div>
+                     <AnimatePresence> {openSection === 'canvas' && ( <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-neutral-800/50"> <div className="p-3 space-y-4"> <div className={cn("grid grid-cols-3 gap-3 text-sm items-end transition-opacity", isInfiniteCanvas && "opacity-50 pointer-events-none")}> <div><label htmlFor="canvas-w">{t('layerComposer_width')}</label><input id="canvas-w" type="number" value={canvasSettings.width} onChange={e => onCanvasSettingsChange(s => ({...s, width: Number(e.target.value)}))} className="form-input !p-1.5 !text-sm" disabled={isInfiniteCanvas}/></div> <div><label htmlFor="canvas-h">{t('layerComposer_height')}</label><input id="canvas-h" type="number" value={canvasSettings.height} onChange={e => onCanvasSettingsChange(s => ({...s, height: Number(e.target.value)}))} className="form-input !p-1.5 !text-sm" disabled={isInfiniteCanvas}/></div> <div className="flex justify-center items-center h-full pb-1"> <div className="relative w-8 h-8" title={t('layerComposer_background')}> <input id="canvas-bg" type="color" value={canvasSettings.background || '#121212'} onChange={e => onCanvasSettingsChange(s => ({...s, background: e.target.value}))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={isInfiniteCanvas}/> <div className="w-full h-full rounded-full border-2 border-white/20 shadow-inner pointer-events-none" style={{ backgroundColor: canvasSettings.background || '#121212' }} /> </div> </div> </div> <div className="flex items-center justify-between mt-2"> <label htmlFor="infinite-canvas-toggle" className="text-sm font-medium text-neutral-200">{t('layerComposer_infiniteCanvas')}</label> <Switch id="infinite-canvas-toggle" checked={isInfiniteCanvas} onChange={setIsInfiniteCanvas} /> </div>
                         <div className="space-y-3 pt-3 border-t border-neutral-700/50">
                             <div className="flex items-center justify-between">
                                 <label htmlFor="smart-guides-toggle" className="text-sm font-medium text-neutral-200">Smart Guides</label>

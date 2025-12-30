@@ -1,10 +1,9 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, MotionValue, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, MotionValue, useMotionValueEvent, useTransform, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { type Layer, type CanvasSettings, type Interaction, type Handle, type Rect, type MultiLayerAction, getBoundingBoxForLayers, type Guide, type CanvasTool } from './LayerComposer.types';
 import { LayerItem } from './LayerItem';
@@ -12,7 +11,7 @@ import { SelectionFrame } from './SelectionFrame';
 import { CanvasToolbar } from './CanvasToolbar';
 import { FloatingLayerToolbar, type LayerAction } from './FloatingLayerToolbar';
 import { FloatingMultiLayerToolbar } from './FloatingMultiLayerToolbar';
-import { useAppControls } from '../uiContexts';
+import { useAppControls } from '../uiUtils';
 
 interface LayerComposerCanvasProps {
     canvasViewRef: React.RefObject<HTMLDivElement>;

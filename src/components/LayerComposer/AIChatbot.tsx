@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -7,7 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppControls } from '../uiContexts';
 import type { Chat } from '@google/genai';
-import { sendChatMessage } from '../../services/geminiService';
+import { sendChatMessage } from '@/src/services/geminiService';
 import { type Layer } from './LayerComposer.types';
 import { LoadingSpinnerIcon, CloseIcon, SendIcon } from '../icons';
 import toast from 'react-hot-toast';
@@ -263,47 +262,4 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ isOpen, onClose, selectedL
 
                     <div className="flex-grow h-80 overflow-y-auto p-3 space-y-4">
                         {messages.map((msg, index) => (
-                            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`p-2 rounded-lg max-w-xs text-sm break-words ${msg.role === 'user' ? 'bg-yellow-400 text-black' : 'bg-neutral-700 text-neutral-200'}`}>
-                                    <MarkdownContent text={msg.text} />
-                                </div>
-                            </div>
-                        ))}
-                        {isLoading && (
-                            <div className="flex justify-start">
-                                <div className="p-2 rounded-lg bg-neutral-700">
-                                    <LoadingSpinnerIcon className="h-5 w-5 text-neutral-400" />
-                                </div>
-                            </div>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
-
-                    <div className="p-3 border-t border-white/10 flex-shrink-0">
-                         <form onSubmit={handleFormSubmit}>
-                            <div className="relative">
-                                <textarea
-                                    value={userInput}
-                                    onChange={(e) => setUserInput(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                    placeholder={t('layerComposer_chatbot_placeholder')}
-                                    className="form-input !text-sm w-full !h-24 !pr-10 resize-none"
-                                    rows={4}
-                                />
-                                <button
-                                    type="submit"
-                                    className="chatbot-send-btn"
-                                    disabled={isLoading || !userInput.trim()}
-                                    aria-label="Send message"
-                                    title="Gửi (Cmd/Ctrl+Enter)"
-                                >
-                                    <SendIcon className="h-5 w-5" />
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
-};
+                            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end'
