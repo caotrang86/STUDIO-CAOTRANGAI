@@ -105,21 +105,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsLoggedIn(true);
             sessionStorage.setItem('currentUser', username);
             
-            // --- NEW: Save Role and Base Credits Logic ---
-            localStorage.setItem('caotrang_username', username);
-            
-            const role = account.role || 'normal';
-            localStorage.setItem('caotrang_role', role);
+            // --- Save User Info, Role and Base Credits Logic ---
+            if (typeof window !== "undefined") {
+                localStorage.setItem('caotrang_username', username);
+                
+                const role = account.role === 'vip' ? 'vip' : 'normal';
+                localStorage.setItem('caotrang_role', role);
 
-            // Determine base credits: use specific config first, then role-based default
-            let baseCredits = 5; // Default normal
-            if (typeof account.credits === 'number') {
-                baseCredits = account.credits;
-            } else if (role === 'vip') {
-                baseCredits = 20;
+                // Logic xác định số credit ban đầu:
+                // 1. Nếu trong JSON có 'credits', dùng số đó.
+                // 2. Nếu không, fallback theo role: vip -> 20, normal -> 5.
+                const fallbackCredits = role === 'vip' ? 20 : 5;
+                const baseCredits = typeof account.credits === 'number' ? account.credits : fallbackCredits;
+                
+                localStorage.setItem(`caotrang_base_credits_${username}`, String(baseCredits));
+                
+                // Quan trọng: Xoá credits hiện tại để lần này được khởi tạo lại từ baseCredits
+                localStorage.removeItem(`caotrang_credits_${username}`);
             }
-            
-            localStorage.setItem(`caotrang_base_credits_${username}`, String(baseCredits));
             // ---------------------------------------------
 
             return true;
@@ -134,6 +137,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('caotrang_username');
         localStorage.removeItem('caotrang_role');
         // Note: We keep credit history in localStorage so users don't lose consumed credits upon logout/login
+        // unless they log in again which resets it via the logic above.
     }, []);
 
     const value = { loginSettings, isLoggedIn, currentUser, isLoading, login, logout };

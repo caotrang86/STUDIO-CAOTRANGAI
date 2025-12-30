@@ -20,7 +20,7 @@ export function getUserRole(username: string): "normal" | "vip" {
 export function getMaxCredits(username: string): number {
   if (typeof window === "undefined") return DEFAULT_NORMAL_CREDITS;
   
-  // Ưu tiên lấy từ cấu hình đã lưu khi login
+  // 1. Ưu tiên lấy từ cấu hình cụ thể đã lưu khi login
   const baseKey = `caotrang_base_credits_${username}`;
   const baseStored = localStorage.getItem(baseKey);
   
@@ -29,7 +29,7 @@ export function getMaxCredits(username: string): number {
     if (!Number.isNaN(parsed)) return parsed;
   }
 
-  // Fallback theo role nếu không có cấu hình cụ thể
+  // 2. Fallback theo role nếu không có cấu hình cụ thể
   const role = getUserRole(username);
   return role === "vip" ? DEFAULT_VIP_CREDITS : DEFAULT_NORMAL_CREDITS;
 }
@@ -40,6 +40,7 @@ export function getUserCredits(username: string): number {
   const key = `caotrang_credits_${username}`;
   const stored = localStorage.getItem(key);
   
+  // Nếu đã có credit hiện tại (đã bị trừ hoặc chưa), trả về giá trị đó
   if (stored) {
     const value = parseInt(stored, 10);
     if (!Number.isNaN(value)) {
@@ -47,7 +48,7 @@ export function getUserCredits(username: string): number {
     }
   }
 
-  // Nếu chưa có lịch sử credit, khởi tạo bằng max credits
+  // Nếu chưa có (lần đầu hoặc bị xoá), khởi tạo bằng Max Credits của user đó
   const initial = getMaxCredits(username);
   localStorage.setItem(key, String(initial));
   return initial;
