@@ -1,0 +1,64 @@
+{
+  "spring2026": {
+    "title": "Tạo ảnh Xuân 2026",
+    "subtitle": "Tạo chân dung Tết Việt Nam 2026 với áo dài đỏ, đèn lồng, hoa đào, hoa mai và không khí lễ hội rực rỡ.",
+    "uploader_caption": "Tải ảnh tham chiếu khuôn mặt (tùy chọn)",
+    "uploader_description": "Bạn có thể tải ảnh tham chiếu khuôn mặt để AI giữ đúng gương mặt, mắt, mũi, miệng và các đặc điểm nhận dạng khi tạo ảnh Xuân 2026.",
+    "options_title": "Tuỳ chọn tạo ảnh Xuân 2026",
+
+    "gender_label": "Giới tính nhân vật",
+    "gender_female": "Nữ",
+    "gender_male": "Nam",
+    "gender_girl": "Bé gái",
+    "gender_boy": "Bé trai",
+
+    "pose_label": "Kiểu tạo dáng",
+    "pose_fan_single": "Cầm quạt một tay, tạo dáng nhẹ nhàng",
+    "pose_fan_double": "Cầm hai quạt, tạo dáng hiện đại, năng động",
+    "pose_elegant": "Tạo dáng sang trọng, nhìn nghiêng nhẹ, nụ cười mỉm",
+    "pose_closeup": "Chân dung cận mặt, nhìn vào máy ảnh",
+    "pose_side_smile": "Quay nhẹ sang bên, mỉm cười và nháy mắt",
+
+    "outfit_label": "Trang phục",
+    "outfit_ao_dai_classic": "Áo dài đỏ cổ điển, thêu hoa văn truyền thống",
+    "outfit_ao_dai_crane": "Áo dài đỏ thêu chim hạc và hoa",
+    "outfit_ao_dai_dragon": "Áo dài đỏ họa tiết rồng phượng",
+    "outfit_ao_dai_kid": "Áo dài đỏ dễ thương cho trẻ em",
+
+    "scene_label": "Bối cảnh",
+    "scene_studio_red": "Phông nền đỏ studio, đèn lồng, câu đối đỏ",
+    "scene_street_festival": "Phố đi bộ ngày Tết, đèn lồng, banner Happy New Year 2026",
+    "scene_traditional_house": "Nhà truyền thống, bàn thờ, mâm ngũ quả, phong bao lì xì",
+    "scene_lanterns": "Đèn lồng đỏ, pháo giấy, bao lì xì",
+    "scene_flowers": "Hoa đào, hoa mai, mẫu đơn và chậu quất Tết",
+    "scene_lucky_decor": "Trang trí chữ Phúc, câu đối đỏ, vàng tài lộc",
+
+    "text_overlay_label": "Chữ trang trí",
+    "text_overlay_none": "Không thêm chữ",
+    "text_overlay_hny_en": "Dòng chữ “Happy New Year 2026”",
+    "text_overlay_hny_vi": "Dòng chữ “Chúc Mừng Năm Mới 2026”",
+
+    "aspect_ratio_label": "Tỷ lệ khung hình",
+    "aspect_ratio_3_4": "3:4 (chân dung dọc)",
+    "aspect_ratio_2_3": "2:3 (in ảnh khổ đứng)",
+    "aspect_ratio_16_9": "16:9 (banner hoặc màn hình rộng)",
+
+    "detail_label": "Mức độ chi tiết",
+    "detail_normal": "Chuẩn",
+    "detail_high": "Chi tiết cao",
+    "detail_ultra": "Siêu chi tiết, tập trung vào chất liệu áo dài và ánh sáng",
+
+    "prompt_label": "Mô tả thêm (tùy chọn)",
+    "prompt_placeholder": "Ví dụ: thêm pháo hoa phía sau, thêm nhiều hoa đào ở góc phải, phong cách chụp studio sang trọng...",
+
+    "button_generate": "Tạo ảnh Xuân 2026",
+    "button_try_another": "Đổi ảnh khác",
+    "button_download": "Tải ảnh xuống",
+
+    "status_generating": "Đang tạo ảnh Xuân 2026, vui lòng đợi...",
+    "status_ready": "Ảnh đã sẵn sàng!",
+    "error_no_credits": "Bạn đã hết lượt tạo ảnh. Vui lòng đăng nhập tài khoản khác hoặc liên hệ admin để mua thêm credit.",
+    "error_generic": "Có lỗi xảy ra khi tạo ảnh Xuân 2026. Vui lòng thử lại sau.",
+    "regen_placeholder": "Ví dụ: làm nụ cười tươi hơn, thêm nhiều hoa hơn, ánh sáng rực rỡ hơn..."
+  }
+}

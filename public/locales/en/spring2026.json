@@ -1,0 +1,64 @@
+{
+  "spring2026": {
+    "title": "Spring 2026 Photo Creator",
+    "subtitle": "Create Vietnamese New Year 2026 portraits with red ao dai, lanterns, peach blossoms, and a festive atmosphere.",
+    "uploader_caption": "Upload Face Reference (Optional)",
+    "uploader_description": "You can upload a face reference photo for the AI to preserve the face, eyes, nose, mouth, and identity features when generating Spring 2026 images.",
+    "options_title": "Spring 2026 Options",
+
+    "gender_label": "Character Gender",
+    "gender_female": "Female",
+    "gender_male": "Male",
+    "gender_girl": "Girl",
+    "gender_boy": "Boy",
+
+    "pose_label": "Pose Style",
+    "pose_fan_single": "Holding fan with one hand, gentle pose",
+    "pose_fan_double": "Holding two fans, modern dynamic pose",
+    "pose_elegant": "Elegant pose, slight turn, gentle smile",
+    "pose_closeup": "Close-up portrait, looking at camera",
+    "pose_side_smile": "Turned slightly sideways, smiling and winking",
+
+    "outfit_label": "Outfit",
+    "outfit_ao_dai_classic": "Classic red ao dai with traditional patterns",
+    "outfit_ao_dai_crane": "Red ao dai with crane and floral embroidery",
+    "outfit_ao_dai_dragon": "Red ao dai with dragon and phoenix motifs",
+    "outfit_ao_dai_kid": "Cute red ao dai for children",
+
+    "scene_label": "Background Scene",
+    "scene_studio_red": "Red studio background, lanterns, red couplets",
+    "scene_street_festival": "Tet street festival, lanterns, Happy New Year 2026 banner",
+    "scene_traditional_house": "Traditional house, altar, five-fruit tray, lucky money envelopes",
+    "scene_lanterns": "Red lanterns, firecrackers and lucky envelopes",
+    "scene_flowers": "Peach blossoms, apricot blossoms, peonies and kumquat tree",
+    "scene_lucky_decor": "Chinese character 'Fu', red couplets and lucky decorations",
+
+    "text_overlay_label": "Decorative Text",
+    "text_overlay_none": "No text",
+    "text_overlay_hny_en": "Text \"Happy New Year 2026\"",
+    "text_overlay_hny_vi": "Text \"Chúc Mừng Năm Mới 2026\"",
+
+    "aspect_ratio_label": "Aspect Ratio",
+    "aspect_ratio_3_4": "3:4 (Portrait)",
+    "aspect_ratio_2_3": "2:3 (Vertical print)",
+    "aspect_ratio_16_9": "16:9 (Banner or wide screen)",
+
+    "detail_label": "Detail Level",
+    "detail_normal": "Standard",
+    "detail_high": "High Detail",
+    "detail_ultra": "Ultra Detailed, focus on ao dai texture and lighting",
+
+    "prompt_label": "Additional Description (Optional)",
+    "prompt_placeholder": "e.g., add fireworks in the background, more peach blossoms on the right, luxury studio style...",
+
+    "button_generate": "Generate Spring 2026 Image",
+    "button_try_another": "Try Another Image",
+    "button_download": "Download Image",
+
+    "status_generating": "Generating Spring 2026 image, please wait...",
+    "status_ready": "Image is ready!",
+    "error_no_credits": "You have run out of credits. Please sign in with another account or contact admin to buy more.",
+    "error_generic": "An error occurred while generating the Spring 2026 image. Please try again later.",
+    "regen_placeholder": "e.g., make the smile brighter, add more flowers, brighter lighting..."
+  }
+}

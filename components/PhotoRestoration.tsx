@@ -227,10 +227,10 @@ const PhotoRestoration: React.FC<PhotoRestorationProps> = (props) => {
         });
     };
     
-    const renderSelect = (id: keyof PhotoRestorationState['options'], label: string, optionList: string[]) => (
+    const renderSelect = (id: 'type' | 'gender', label: string, optionList: string[]) => (
         <div>
             <label htmlFor={id} className="block text-left base-font font-bold text-lg text-neutral-200 mb-2">{label}</label>
-            <select id={id} value={appState.options[id] as string} onChange={(e) => handleOptionChange(id, e.target.value)} className="form-input">
+            <select id={id} value={appState.options[id]} onChange={(e) => handleOptionChange(id, e.target.value)} className="form-input">
                 {optionList.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
         </div>

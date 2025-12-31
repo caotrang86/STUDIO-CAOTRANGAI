@@ -9,6 +9,14 @@
   },
   "apps": [
     {
+      "id": "spring2026Creator",
+      "titleKey": "app_spring2026Creator_title",
+      "descriptionKey": "app_spring2026Creator_description",
+      "icon": "🌸",
+      "supportsCanvasPreset": true,
+      "previewImageUrl": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjSjVD06y6eLF-nN5F98tJKKEXeNN-qYdeqna7E3qIOBOW5v8ESwTb14PYIOlStJnvzE21oTv9kbkk9XEmEf8dWhlMdyaJKkK3WOyBI_4jC324zm0S0DJQBRfEL05DG7wPoSLEduTuieHnAL9Lb1arBQ0FfZ8dsjYVVmezxuNNt-ckLap7JTUDskRGdHhm7/s1344/CaoTrangAI-image-2%20(1).png"
+    },
+    {
       "id": "free-generation",
       "titleKey": "app_free-generation_title",
       "descriptionKey": "app_free-generation_description",
@@ -234,5 +242,13 @@
     "uploaderDescriptionOutputKey": "imageInterpolation_uploaderDescriptionOutput",
     "uploaderCaptionReferenceKey": "imageInterpolation_uploaderCaptionReference",
     "uploaderDescriptionReferenceKey": "imageInterpolation_uploaderDescriptionReference"
+  },
+  "spring2026Creator": {
+    "mainTitleKey": "spring2026Creator_mainTitle",
+    "subtitleKey": "spring2026Creator_subtitle",
+    "useSmartTitleWrapping": true,
+    "smartTitleWrapWords": 2,
+    "uploaderCaptionKey": "spring2026Creator_uploaderCaption",
+    "uploaderDescriptionKey": "spring2026Creator_uploaderDescription"
   }
 }

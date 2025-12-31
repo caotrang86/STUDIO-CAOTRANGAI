@@ -360,7 +360,9 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 'mixStyle',
                 'photoRestoration',
                 'swapStyle',
-                'toyModelCreator'
+                'toyModelCreator',
+                'spring2026Creator',
+                'spring2026' // NEW: Added spring2026 module for translations
             ];
             try {
                 const fetchPromises = modules.map(module =>

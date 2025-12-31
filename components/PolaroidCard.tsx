@@ -25,7 +25,7 @@ import {
     DeleteIcon,
 } from './icons';
 
-type ImageStatus = 'pending' | 'done' | 'error';
+type ImageStatus = 'idle' | 'pending' | 'done' | 'error';
 
 interface PolaroidCardProps {
     mediaUrl?: string;

@@ -30,7 +30,7 @@ interface ActionablePolaroidCardProps {
     // Core PolaroidCard props
     mediaUrl?: string;
     caption: string;
-    status: 'pending' | 'done' | 'error';
+    status: 'idle' | 'pending' | 'done' | 'error';
     error?: string;
     placeholderType?: 'person' | 'architecture' | 'clothing' | 'magic' | 'style';
     isMobile?: boolean;

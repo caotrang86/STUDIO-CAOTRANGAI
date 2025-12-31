@@ -27,3 +27,4 @@ export * from './gemini/videoGenerationService';
 export * from './gemini/presetService'; // NEW: Export the centralized preset service
 export * from './gemini/chatService'; // NEW: Export the new chat service
 export * from './gemini/storyboardingService'; // NEW: Export the new storyboarding service
+export * from './gemini/spring2026CreatorService'; // NEW: Export the spring 2026 creator service

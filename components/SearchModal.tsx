@@ -10,7 +10,7 @@ interface AppConfig {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 interface SearchModalProps {
