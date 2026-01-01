@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -28,3 +29,4 @@ export * from './gemini/presetService'; // NEW: Export the centralized preset se
 export * from './gemini/chatService'; // NEW: Export the new chat service
 export * from './gemini/storyboardingService'; // NEW: Export the new storyboarding service
 export * from './gemini/spring2026CreatorService'; // NEW: Export the spring 2026 creator service
+export * from './gemini/tetQr2026Service'; // NEW: Export the tet qr 2026 service

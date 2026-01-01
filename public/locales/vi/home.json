@@ -1,3 +1,4 @@
+
 {
   "home_mainTitle": "Cao Trang AI",
   "home_subtitle": "Chọn ứng dụng hoặc tải lên json setting để bắt đầu",
@@ -31,5 +32,20 @@
   "app_swap-style_title": "Thay đổi phong cách ảnh",
   "app_swap-style_description": "Biến đổi ảnh của bạn theo hàng trăm phong cách nghệ thuật, hoặc bằng cách trộn nó với phong cách của một ảnh khác.",
   "app_spring2026Creator_title": "Tạo ảnh Xuân 2026",
-  "app_spring2026Creator_description": "Tạo ảnh chân dung Tết Ất Tỵ 2026 rực rỡ, đậm chất studio nghệ thuật."
+  "app_spring2026Creator_description": "Tạo ảnh chân dung Tết Ất Tỵ 2026 rực rỡ, đậm chất studio nghệ thuật.",
+  "app_tet-qr-2026_title": "Tạo ảnh QR lì xì Tết 2026",
+  "app_tet-qr-2026_description": "Thiết kế ảnh lì xì Tết 2026 có chân dung và mã QR chuyển khoản ngân hàng của bạn.",
+  "tetQr2026_form_title": "Thông tin tài khoản ngân hàng",
+  "tetQr2026_bank_name_label": "Ngân hàng",
+  "tetQr2026_account_name_label": "Tên chủ tài khoản",
+  "tetQr2026_account_number_label": "Số tài khoản",
+  "tetQr2026_amount_label": "Số tiền lì xì (tùy chọn)",
+  "tetQr2026_message_label": "Lời chúc / ghi chú (tùy chọn)",
+  "tetQr2026_generate_button": "Tạo ảnh QR lì xì Tết 2026",
+  "tetQr2026_regen_button": "Tạo lại ảnh khác",
+  "tetQr2026_qr_preview_title": "Mã QR lì xì",
+  "tetQr2026_qr_preview_hint": "Người nhận có thể quét mã này bằng ứng dụng ngân hàng để nhận lì xì.",
+  "tetQr2026_error_missing_fields": "Vui lòng nhập đầy đủ Ngân hàng, Tên chủ tài khoản và Số tài khoản.",
+  "tetQr2026_status_generating": "Đang tạo ảnh và mã QR lì xì...",
+  "tetQr2026_status_ready": "Ảnh QR lì xì Tết 2026 đã sẵn sàng!"
 }

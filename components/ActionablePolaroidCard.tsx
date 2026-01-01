@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -43,6 +44,7 @@ interface ActionablePolaroidCardProps {
     onImageChange?: (imageDataUrl: string | null) => void;
     onRegenerate?: (prompt: string) => void;
     onGenerateVideoFromPrompt?: (prompt: string) => void;
+    onDownload?: () => void;
     
     // Props for modals
     regenerationTitle?: string;
@@ -63,6 +65,7 @@ const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = ({
     onImageChange,
     onRegenerate,
     onGenerateVideoFromPrompt,
+    onDownload,
     regenerationTitle,
     regenerationDescription,
     regenerationPlaceholder,
@@ -76,7 +79,7 @@ const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = ({
     const [isDraggingOver, setIsDraggingOver] = useState(false);
 
     // --- Determine button visibility based on the card's role (type) ---
-    const isDownloadable = type === 'output';
+    const isDownloadable = type === 'output' || !!onDownload;
     const isEditable = type !== 'uploader' && type !== 'display';
     const isClearable = type !== 'output' && type !== 'display' && !!mediaUrl && onImageChange;
     const isSwappable = type !== 'output' && type !== 'display';
@@ -164,11 +167,15 @@ const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = ({
     }, [onGenerateVideoFromPrompt]);
 
     const handleDownloadClick = useCallback(() => {
+        if (onDownload) {
+            onDownload();
+            return;
+        }
         if (mediaUrl) {
             const filename = `${caption.replace(/[\s()]/g, '-')}`;
             downloadImage(mediaUrl, filename);
         }
-    }, [mediaUrl, caption]);
+    }, [mediaUrl, caption, onDownload]);
 
     const handleOpenGalleryPicker = useCallback(() => {
         setGalleryPickerOpen(true);
@@ -197,7 +204,7 @@ const ActionablePolaroidCard: React.FC<ActionablePolaroidCardProps> = ({
     // Otherwise, use the provided onClick handler (e.g., for opening a lightbox).
     const effectiveOnClick = !mediaUrl || type === 'uploader' ? handleSwapClick : onClick;
 
-    const showButtons = status === 'done' && mediaUrl;
+    const showButtons = (status === 'done' && mediaUrl) || (type === 'display' && onDownload);
     const canDoSomething = isRegeneratable || !!onGenerateVideoFromPrompt;
 
     return (

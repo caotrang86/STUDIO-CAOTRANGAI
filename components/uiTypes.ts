@@ -341,6 +341,31 @@ export interface Spring2026CreatorState {
     error: string | null;
 }
 
+export interface TetQr2026CreatorState {
+    stage: 'idle' | 'configuring' | 'generating' | 'results';
+    uploadedImage: string | null;
+    generatedImage: string | null;
+    qrCodeUrl: string | null;
+    historicalImages: string[];
+    options: {
+        bankName: string;
+        accountName: string;
+        accountNumber: string;
+        amount: string;
+        message: string;
+        mode: 'adult' | 'kid';
+        outfit: string;
+        customOutfit?: string;
+        greeting: string;
+        gender: string;
+        style: string;
+        notes: string;
+        removeWatermark: boolean;
+        aspectRatio: string;
+    };
+    error: string | null;
+}
+
 // --- Storyboarding Types ---
 export interface FrameState {
     description: string;
@@ -380,7 +405,8 @@ export type AnyAppState =
   | ImageToRealState
   | ToyModelCreatorState
   | ImageInterpolationState
-  | Spring2026CreatorState;
+  | Spring2026CreatorState
+  | TetQr2026CreatorState;
 
 export type HomeView = { viewId: 'home'; state: HomeState };
 export type ArchitectureIdeatorView = { viewId: 'architecture-ideator'; state: ArchitectureIdeatorState };
@@ -397,6 +423,7 @@ export type ToyModelCreatorView = { viewId: 'toy-model-creator'; state: ToyModel
 export type ImageInterpolationView = { viewId: 'image-interpolation'; state: ImageInterpolationState };
 export type ImageToRealView = { viewId: 'image-to-real'; state: ImageToRealState };
 export type Spring2026CreatorView = { viewId: 'spring2026Creator'; state: Spring2026CreatorState };
+export type TetQr2026CreatorView = { viewId: 'tet-qr-2026'; state: TetQr2026CreatorState };
 
 export type ViewState =
   | HomeView
@@ -413,7 +440,8 @@ export type ViewState =
   | ToyModelCreatorView
   | ImageInterpolationView
   | ImageToRealView
-  | Spring2026CreatorView;
+  | Spring2026CreatorView
+  | TetQr2026CreatorView;
 
 export const getInitialStateForApp = (viewId: string): AnyAppState => {
     switch (viewId) {
@@ -492,6 +520,31 @@ export const getInitialStateForApp = (viewId: string): AnyAppState => {
                     scene: 'studio_red',
                     textOverlay: 'none',
                     detailLevel: 'high',
+                    notes: '',
+                    removeWatermark: false,
+                    aspectRatio: '3:4'
+                },
+                error: null
+            };
+        case 'tet-qr-2026':
+            return {
+                stage: 'idle',
+                uploadedImage: null,
+                generatedImage: null,
+                qrCodeUrl: null,
+                historicalImages: [],
+                options: {
+                    bankName: '',
+                    accountName: '',
+                    accountNumber: '',
+                    amount: '',
+                    message: '',
+                    mode: 'adult',
+                    outfit: 'red_traditional',
+                    customOutfit: '',
+                    greeting: '',
+                    gender: 'male',
+                    style: 'standard',
                     notes: '',
                     removeWatermark: false,
                     aspectRatio: '3:4'

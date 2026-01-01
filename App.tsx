@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -47,7 +48,8 @@ const SwapStyle = lazy(() => import('./components/SwapStyle'));
 const FreeGeneration = lazy(() => import('./components/FreeGeneration'));
 const ToyModelCreator = lazy(() => import('./components/ToyModelCreator'));
 const ImageInterpolation = lazy(() => import('./components/ImageInterpolation'));
-const Spring2026Creator = lazy(() => import('./components/Spring2026Creator')); // NEW APP
+const Spring2026Creator = lazy(() => import('./components/Spring2026Creator'));
+const TetQr2026Creator = lazy(() => import('./components/TetQr2026Creator')); // NEW APP
 
 
 const AppLoadingFallback = () => (
@@ -70,6 +72,7 @@ const AppComponents: Record<string, any> = {
     'toy-model-creator': { Component: ToyModelCreator, settingsKey: 'toyModelCreator', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaption: t(s.uploaderCaptionKey), uploaderDescription: t(s.uploaderDescriptionKey) }) },
     'image-interpolation': { Component: ImageInterpolation, settingsKey: 'imageInterpolation', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaptionInput: t(s.uploaderCaptionInputKey), uploaderDescriptionInput: t(s.uploaderDescriptionInputKey), uploaderCaptionOutput: t(s.uploaderCaptionOutputKey), uploaderDescriptionOutput: t(s.uploaderDescriptionOutputKey), uploaderCaptionReference: t(s.uploaderCaptionReferenceKey), uploaderDescriptionReference: t(s.uploaderDescriptionReferenceKey) }) },
     'spring2026Creator': { Component: Spring2026Creator, settingsKey: 'spring2026Creator', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaption: t(s.uploaderCaptionKey), uploaderDescription: t(s.uploaderDescriptionKey) }) },
+    'tet-qr-2026': { Component: TetQr2026Creator, settingsKey: 'tetQr2026Creator', props: (s:any, t:any) => ({ mainTitle: t(s.mainTitleKey), subtitle: t(s.subtitleKey), uploaderCaption: t(s.uploaderCaptionKey), uploaderDescription: t(s.uploaderDescriptionKey) }) },
 };
 
 

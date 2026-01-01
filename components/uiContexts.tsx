@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -362,7 +363,8 @@ export const AppControlProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 'swapStyle',
                 'toyModelCreator',
                 'spring2026Creator',
-                'spring2026' // NEW: Added spring2026 module for translations
+                'spring2026',
+                'tetQr2026Creator' // NEW: Added tetQr2026Creator module for translations
             ];
             try {
                 const fetchPromises = modules.map(module =>

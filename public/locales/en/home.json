@@ -1,3 +1,4 @@
+
 {
   "home_mainTitle": "Cao Trang AI",
   "home_subtitle": "Select an app or upload a json setting to start",
@@ -31,5 +32,20 @@
   "app_swap-style_title": "Swap Image Style",
   "app_swap-style_description": "Transform your photo using hundreds of artistic styles or by blending it with the style of another image.",
   "app_spring2026Creator_title": "Spring 2026 Creator",
-  "app_spring2026Creator_description": "Create stunning, festive portraits for the 2026 Lunar New Year with a unique studio style."
+  "app_spring2026Creator_description": "Create stunning, festive portraits for the 2026 Lunar New Year with a unique studio style.",
+  "app_tet-qr-2026_title": "Tet 2026 Lucky Money QR",
+  "app_tet-qr-2026_description": "Design a Tet 2026 image with your portrait and a bank transfer QR code for lucky money.",
+  "tetQr2026_form_title": "Bank account information",
+  "tetQr2026_bank_name_label": "Bank",
+  "tetQr2026_account_name_label": "Account holder name",
+  "tetQr2026_account_number_label": "Account number",
+  "tetQr2026_amount_label": "Amount (optional)",
+  "tetQr2026_message_label": "Greeting / note (optional)",
+  "tetQr2026_generate_button": "Generate Tet 2026 QR image",
+  "tetQr2026_regen_button": "Generate another variation",
+  "tetQr2026_qr_preview_title": "Lucky money QR code",
+  "tetQr2026_qr_preview_hint": "Recipients can scan this code with their banking app to receive your Tet lucky money.",
+  "tetQr2026_error_missing_fields": "Please fill in Bank, Account holder name and Account number.",
+  "tetQr2026_status_generating": "Generating your Tet 2026 portrait and QR code...",
+  "tetQr2026_status_ready": "Your Tet 2026 lucky money QR image is ready!"
 }
